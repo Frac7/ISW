@@ -1,0 +1,130 @@
+/*
+    Created on : 28-mar-2017, 11.49.27
+    Author     : Gruppo n°8
+*/
+
+/* IMPOSTAZIONI GENERALI */
+.color-primary-0 { color: #1A5EB6 }	/* Main Primary color */
+.color-primary-1 { color: #E2E6EB } /* Background color*/
+.color-primary-2 { color: #5E92D4 } /* Intestation color*/
+.color-primary-3 { color: #08346D } /* Something pressed color*/
+.color-primary-4 { color: #011D42 } /* Something targeted with mouse color*/
+
+
+body{
+    background-color: #E2E6EB;
+}
+
+header {
+    margin-bottom: 2px;
+    background-color: #1A5EB6;
+    border-radius: 3px;
+    font: 20px/20px "Arial Bold", Times, serif;
+    height: 170px;
+}
+
+a:link {
+    color: #FFFFFF;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #FFFFFF;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #5E92D4;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:active {
+    color: yellow;
+    background-color: transparent;
+    text-decoration: underline;
+}
+
+/* CSS Main */
+#intestazione{
+    color: #5E92D4;
+    font: 30px/30px "Pristina", Monospaced, serif;
+}
+
+#userLogin{
+    float: right;
+}
+
+#btnAccedi, #btnRegistrati, #btnLogout{
+    border-radius: 3px;
+    height: 25px;
+    width: 95px;
+    margin-right: 5px;
+}
+
+/* NON FUNZIONA QUESTA
+#btnAccedi:hover, #btnRegistrati:hover #btnLogout:hover{
+    color: #5E92D4;
+}
+*/
+
+#divRicerca {
+    /*
+    border-style: solid;
+    border-color: #5E92D4;
+    */
+    margin-top: 20px;
+}
+
+
+#divRisultatoRicerca{
+    border-style: solid;
+    border-color: #5E92D4;
+    margin-top: 20px;
+}
+
+#divSuggerimenti {
+    border-style: solid;
+    border-color: #5E92D4;
+    margin-top: 20px;
+}
+
+/* CSS Home */
+#tabellaPrenotazioni{
+    margin-top: 10px;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #000000;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+/**********************************************************************************************************************/
+/* CSS Aggiungi Hotel */
+#divTastoAggiungi{
+    border-style: solid;
+    border-color: #5E92D4;
+    margin-top: 3px;
+    border-radius: 3px;
+    height: 30px;
+}
+
+#btnAggiungiHotel{
+    width: 100%;
+    height: 100%;
+    background: #08346D;
+    color: #E2E6EB;
+    font: 20px/20px "Times New Roman", Monospaced, serif;
+}
