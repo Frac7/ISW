@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author">
+    <meta name="keywords" content="the reception reseption booking hotel prenota">
+    <link rel="stylesheet" type="text/css" href="Style.css" media="screen">
+    <title>The Reception</title>
+</head>
+<body>
+    <header>
+        <div id="intestazione">
+            <img id="logo">
+            <h1> The Reception.com</h1>
+        </div>
+        <div id="userForm">
+            <nav>
+                <div id="userLogin">
+                     <button id="btnRegistrati" type="button" value="registrati"> Registrati </button>
+                     <button id="btnAccedi" type="button" value="accedi" onclick="document.getElementById('id01').style.display='block'" style="width:auto;"> Accedi </button>
+                </div>
+                <div id="userImpostazioni">
+
+                    <a href="Cookies.html"> Cookies </a>
+                    <a href="Assistenza.html"> Assistenza </a>
+                </div>
+
+            </nav>
+        </div>
+    </header>
+    <div id="divRicerca">
+        <input type="search" placeholder="Dove vuoi andare?">
+        Data Arrivo <input id="dataArrivo" type="date">
+        Data Partenza <input id="dataPartenza" type="date">
+        Numero di persone<input id="quantita" type="number" min="1">
+        <input id="btnCerca" type="submit" value="Cerca">
+        <!--
+        <div id="id01" class="modal">
+            <form action="action_page.php">
+            <div class="imgcontainer">
+                <img src="img_avatar2.png" alt="Avatar" class="avatar">
+            </div>
+
+            <div class="container">
+                <label for="uname"><b>Username</b></label>
+                <input type="text" placeholder="Enter Username" name="uname" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
+
+                <button type="submit">Login</button>
+                <label>
+                    <input type="checkbox" checked="checked" name="remember"> Remember me
+                </label>
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+                <button type="button" class="cancelbtn">Cancel</button>
+                <span class="psw">Forgot <a href="#">password?</a></span>
+            </div>
+            </form>
+        </div>
+    </div> -->
+    <div id="divRisultatoRicerca">
+        RISULTATI RICERCA QUI
+    </div>
+    <div id="divSuggerimenti">
+        POSTI CONSIGLIATI QUI
+    </div>
+</body>
+</html>
