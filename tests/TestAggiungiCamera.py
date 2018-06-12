@@ -1,4 +1,7 @@
 #test di accettazione per user story aggiungi camera
+from GestioneHotel.models import Albergatore
+
+
 class TestAggiungiCamera:
     #Task login user story, requisito
     def testLogin(self):
@@ -8,7 +11,7 @@ class TestAggiungiCamera:
         #Creazione albergatore (nome, cognome, email, password
         email = "username@dominio"
         password = "unaPassword"
-        albergatore = Utente("un", "Albergatore", email, password)
+        albergatore = Albergatore("un", "Albergatore", email, password)
         #Controlla che i dati inseriti siano validi per il login
         assert autorizzaAccesso(albergatore.getEmail(), albergatore.getPassword())
     #task aggiungi camera, requisito user story
