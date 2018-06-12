@@ -8,10 +8,16 @@ class Albergatore(models.Model):
     email = models.EmailField()
     password = models.CharField(max_length=15)
 
+class Indirizzo(models.Model):
+    via = models.CharField(max_length=15)
+    numero = models.CharField(max_length=5)
 
 class Hotel(models.Model):
-    proprietario=models.ForeignKey(Albergatore)
-
+    nome = models.CharField(max_length=15)
+    descrizione = models.CharField(max_length=100)
+    citta = models.CharField(max_length=15)
+    indirizzo = models.ForeignKey(Indirizzo)
+    proprietario = models.ForeignKey(Albergatore)
 
 class Camera(models.Model):
     hotel=models.ForeignKey(Hotel)

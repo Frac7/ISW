@@ -1,9 +1,7 @@
-#test di accettazione per user story aggiungi camera
-from GestioneHotel.models import Albergatore
 from django.test import TestCase
 import unittest
 
-class TestAggiungiCamera(TestCase):
+class TestHotel(TestCase):
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password
         email = "username@dominio"
@@ -23,14 +21,10 @@ class TestAggiungiCamera(TestCase):
         # Camera(numero, posti letto, servizi, hotel)
         camera = Camera(1, 4, servizi, hotel)
         self.camera = camera
-    #Task login user story, requisito
-    def testLogin(self):
-        #Controlla che i dati inseriti siano validi per il login
-        self.assertTrue(autorizzaAccesso(self.albergatore.getEmail(), self.albergatore.getPassword()), 'Accesso non autorizzato')
-    #task aggiungi camera, requisito user story
-    def testAggiungiCamera(self):
-        #Una volta creata la camera, si controlla che questa sia presente nell'hotel
+    def testListaCamere(self):
         self.assertTrue(self.camera in hotel.listaCamere(), 'Camera non aggiunta')
-
+        self.assertEqual(len(Camera.objects.all()), 1, 'La lunghezza della lista camera e\' diversa da 1')
 if __name__ == "__main__":
     unittest.main()
+
+
