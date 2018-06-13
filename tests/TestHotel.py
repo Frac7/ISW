@@ -1,6 +1,7 @@
 from django.test import TestCase
 import unittest
 
+
 class TestHotel(TestCase):
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password
