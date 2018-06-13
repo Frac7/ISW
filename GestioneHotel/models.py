@@ -1,6 +1,4 @@
 from django.db import models
-from django.utils import timezone
-
 
 class Albergatore(models.Model):
     nome = models.CharField(max_length=50)
@@ -18,9 +16,12 @@ class Hotel(models.Model):
     citta = models.CharField(max_length=50)
     indirizzo = models.ForeignKey(Indirizzo)
     proprietario = models.ForeignKey(Albergatore)
+
 class Camera(models.Model):
     hotel=models.ForeignKey(Hotel)
 
+class Servizio(models.Model):
+    pass
 
 class Prenotazione(models.Model):
     camera=models.ForeignKey(Camera)
