@@ -9,5 +9,5 @@ class TestListaPrenotazioni
         #Controlla che i dati inseriti siano validi per il login
         assert autorizzaAccesso(albergatore.getEmail(), albergatore.getPassword())
 
-    #Una volta ch'è stato effettuato il login, l'untente tramite il menù accede alla lista degli hotel che li appartengono
+    #Una volta ch'e' stato effettuato il login, l'untente tramite il menu accede alla lista degli hotel che li appartengono
     #          e controlla se ci sono presenti tutti

@@ -6,5 +6,5 @@ class TestAggiuntaHotel(TestCase):
     def testAggiungiHotel(self):
         albergatore = Albergatore('Franco','Pischedda', 'piscofranco@gmail.com', 'password')
         indirizzo= Indirizzo('Via Trincea Dei razzi', '152A')
-        hotel= Hotel('GrandRoyalHotel', 'Hotel più bello di Casteddu','Cagliari', indirizzo,albergatore )
+        hotel= Hotel('GrandRoyalHotel', 'Hotel piu\' bello di Casteddu','Cagliari', indirizzo,albergatore )
         assert hotel in Albergatore.ListaHotel()

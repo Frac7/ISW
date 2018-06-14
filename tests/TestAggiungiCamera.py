@@ -8,23 +8,23 @@ class TestAggiungiCamera(TestCase):
         # Creazione albergatore (nome, cognome, email, password
         email = "username@dominio"
         password = "unaPassword"
-        self.albergatore = Albergatore("un", "Albergatore", email, password)
+        self.albergatore = Albergatore(nome="un", cognome="Albergatore", email=email, password=password)
         self.albergatore.save()
         # Creazione singolo servizio: nome e descrizione
-        servizio = Servizio("TV", "televisione")
+        servizio = Servizio(nome="TV", descrizioneServizio="televisione")
         servizio.save()
         # Servizi a disposizione per la camera
         servizi = []
         servizi.append(servizio)
         # Indirizzo hotel
-        indirizzo = Indirizzo("Via Ospedale", "72")
+        indirizzo = Indirizzo(via="Via Ospedale", numero="72")
         indirizzo.save()
         # Hotel in cui e' presente la camera
-        self.hotel = Hotel("unHotel", "unHotelACagliari", "Cagliari", indirizzo, self.albergatore)
+        self.hotel = Hotel(nome="unHotel", descrizione="unHotelACagliari", citta="Cagliari", indirizzo=indirizzo, proprietario_id=self.albergatore.id)
         self.hotel.save()
         # crea una camera con dei dati
         # Camera(numero, posti letto, servizi, hotel)
-        self.camera = Camera(1, 4, servizi, self.hotel)
+        self.camera = Camera(numero=1, postiLetto=4, servizi_id=servizio.id, hotel_id=self.hotel.id)
         self.camera.save()
     #Task login user story, requisito
     def testLogin(self):
