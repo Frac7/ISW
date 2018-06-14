@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author">
+    <meta name="keywords" content="the reception reseption booking hotel prenota">
+    <link rel="stylesheet" type="text/css" href="Style.css" media="screen">
+    <title> Registrati </title>
+</head>
+<body>
+    <header>
+        <div id="intestazione">
+            <img id="logo" src="img//LogoBooking.png" alt="Logo" width="100" height="100">
+            <h1 id="intLogo"> The Reception.com</h1>
+        </div>
+        <div id="userLogin">
+            <button id="btnAccediInRegistrazi" type="button" value="accedi" onclick="top.location.href='Login.html'"> Hai già un account? </button>
+        </div>
+    </header>
+    <form>
+        <div id="formRegistrazione">
+            <h1 id="intestazionePagina"> Registrati </h1>
+            <p id="intestazioneSotto"> Per favore, compili questi campi per creare un account.</p>
+
+            <div id="campiPerRegistrazione">
+                <label for="email"><b>Email</b></label> <br>
+                <input type="text"  name="email" required> <br>
+
+                <label for="psw"><b>Password</b></label> <br>
+                <input type="password"  name="psw" required> <br>
+
+                <label for="psw-repeat"><b>Riinserire la Password</b></label> <br>
+                <input type="password" name="psw-repeat" required> <br>
+            </div>
+            <div id="tastiRegistrazione" class="clearfix">
+                <button type="button" onclick="top.location.href='Main.html'" > Annulla</button>
+                <button type="submit" class="signupbtn"> Accedi</button>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

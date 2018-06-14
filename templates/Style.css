@@ -47,6 +47,18 @@ a:active {
     text-decoration: underline;
 }
 
+#logo{
+    float: left;
+    margin-top: 40px;
+    margin-left: 40px;
+}
+
+#intLogo{
+    margin-top: 0px;
+    padding-top: 85px;
+    margin-left: 10px;
+}
+/**********************************************************************************************************************/
 /* CSS Main */
 #intestazione{
     color: #5E92D4;
@@ -91,6 +103,7 @@ a:active {
     margin-top: 20px;
 }
 
+/**********************************************************************************************************************/
 /* CSS Home */
 #tabellaPrenotazioni{
     margin-top: 10px;
@@ -127,4 +140,16 @@ tr:nth-child(even) {
     background: #08346D;
     color: #E2E6EB;
     font: 20px/20px "Times New Roman", Monospaced, serif;
+}
+
+/**********************************************************************************************************************/
+/* CSS Login */
+#imgProfiloContenitore, #formLogin, #ritorno{
+    margin-left: 35%;
+}
+
+/**********************************************************************************************************************/
+/* CSS Registrazione*/
+#formRegistrazione{
+    margin-left: 35%;
 }

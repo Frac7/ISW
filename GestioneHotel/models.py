@@ -18,10 +18,14 @@ class Hotel(models.Model):
     proprietario = models.ForeignKey(Albergatore)
 
 class Camera(models.Model):
-    hotel=models.ForeignKey(Hotel)
+    nome = models.IntegerField(max_length=2)
+    postiLetto = models.IntegerField(default=1)
+    servizi = models.ForeignKey(Servizio)
+    hotel = models.ForeignKey(Hotel)
 
 class Servizio(models.Model):
-    pass
+    nome = models.CharField(max_length=15)
+    descrizioneServizio = models.TextField()
 
 class Prenotazione(models.Model):
     camera=models.ForeignKey(Camera)
