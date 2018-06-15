@@ -39,6 +39,19 @@ def dettagliHotel(request, hotelID):
 def autorizzaAccesso(request, email, password):
     pass
 def listaHotel(request, albergatoreID):
+    try:
+        albergatore = Albergatore.objects.get(id=albergatoreID)
+    except Albergatore.DoesNotExist:
+        albergatore = None
+        listaHotel = []
+        for hotel in Hotel.objects.all():
+            if hotel.proprietario.__eq__(albergatore):
+                listaHotel.append(hotel)
+        return render(request,
+                      "AggiungiHotel_provaDinamica.html",{
+                        'listaHotel' : listaHotel
+                      })
+
     pass
 def prenotazionePerAlbergatore(request, albergatoreID):
     pass
