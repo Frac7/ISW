@@ -11,13 +11,15 @@ import unittest
 class ModelTest(TestCase):
     # Creazione di Un Hotel
     def setUp(self):
-        albergatore1 = Albergatore(nome="Pino", cognome='Pipetta', email='pinopipetta@outlook.com', password='ninnito42')
+        albergatore1 = Albergatore(nome="Pino", cognome="Pipetta", email="pinopipetta@outlook.com", password="ninnito42")
         albergatore1.save()
-        albergatore2 = Albergatore(nome="Pippo", cognome='Pluto', email='pippopluto@outlook.com', password='cosimo83')
+        albergatore2 = Albergatore(nome="Pippo", cognome="Pluto", email="pippopluto@outlook.com", password="cosimo83")
         albergatore2.save()
-        self.hotel1=Hotel(nome="Hilton", descrizione="Il Migliore!", email="hilton@hilton.com",password="123")
+        indirizzo = Indirizzo(via="Via Lombardia", numero="32")
+        indirizzo.save()
+        self.hotel1=Hotel(nome="Hilton", descrizione="Il Migliore!", citta="Cagliari", indirizzo=indirizzo, proprietario=albergatore1)
         self.hotel1.save()
-        self.hotel2=Hotel(nome="Hilton", descrizione="Il Migliore!", email="hilton@hilton.com",password="123")
+        self.hotel2=Hotel(nome="Hilton", descrizione="Il Migliore!", citta="Roma", indirizzo=indirizzo, proprietario=albergatore2)
         self.hotel2.save()
     # Conteggio Hotels
     def testCountHotels(self):

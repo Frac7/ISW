@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author">
+    <meta name="keywords" content="the reception reseption booking hotel prenota ">
+    <link rel="stylesheet" type="text/css" href="Style.css" media="screen">
+    <title> Hotel </title>
+</head>
+<body>
+    <header>
+        <div id="intestazione">
+            <img id="logo" src="img//LogoBooking.png" alt="Logo" width="100" height="100">
+            <h1 id="intLogo"> The Reception.com</h1>
+        </div>
+        <div id="userForm">
+            <nav>
+                <div id="userLogin">
+                     <button id="btnLogout" type="button" value="esci" onclick="top.location.href='Main.html'" > Logout </button>
+                </div>
+                <div id="userImpostazioni">
+                    <a href="Home.html"> Prenotazioni</a>
+                    <a href="AggiungiHotel.html"> Lista Hotel </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <div id="infoHotel">
+        <ul>
+            <li>{{hotel.nome}}</li>
+            <li>{{hotel.descrizione}}</li>
+            <li>{{hotel.indirizzo.via}}, {{hotel.indirizzo.numero}}</li>
+            <li>{{hotel.citta}}</li>
+        </ul>
+    </div>
+    <div id="divTastoAggiungi">
+        <button id="btnAggiungiHotel" type="button" value="aggiungi"> Aggiungi Camera </button>
+    </div>
+    <div id="listaCamereHotel">
+        <h1>Camere dell'hotel</h1>
+        <table>
+            <tr>
+                <th>Numero</th>
+                <th>Posti Letto</th>
+                <th>Servizi</th>
+            </tr>
+             {% for camera in camere %}
+                <tr>
+                    <td>{{camera.numero}}</td>
+                    <td>{{camera.postiLetto}}</td>
+                    <td><ul>
+                        {% for servizio in camera.servizi %}
+                            <li>{{servizio.nome}}, {{servizio.descrizione}}</li>
+                        {% endfor %}
+                    </ul></td>
+                </tr>
+             {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

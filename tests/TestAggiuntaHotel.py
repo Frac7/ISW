@@ -1,4 +1,4 @@
-from GestioneHotel.models import Albergatore, Servizio, Indirizzo, Hotel, Camera
+from GestioneHotel.models import *
 from django.test import TestCase
 import unittest
 
@@ -15,12 +15,15 @@ class TestAggiuntaHotel(TestCase):
         self.hotel.save()
 
     def testRegistrazione(self):
-        # errore perche albergatore non e iterabile, da correggere
-        self.assertEqual(self.albergatore.email, Albergatore.objects.get(self.albergatore).email)
-        self.assertEqual(self.albergatore.password, Albergatore.objects.get(self.albergatore).password)
+        tuttiGliAlbergatori = Albergatore.objects.all()
+        self.assertEqual(self.albergatore.email, tuttiGliAlbergatori.get(id=self.albergatore.id).email)
+        self.assertEqual(self.albergatore.password, tuttiGliAlbergatori.get(id=self.albergatore.id).password)
+        self.assertEqual(tuttiGliAlbergatori.get(id=self.albergatore.id), self.albergatore)
+        #Ho risolto il problema prendendo prima tutti gli oggetti (all) e poi facendo get sulla lista specificando il parametro
+        #ovvero l'id di self.albergatore (che viene assegnato in automatico)
 
     def testAggiungiHotel(self):
-        self.assertTrue(self.hotel in self.albergatore.listaHotel(), 'Hotel non aggiunta')
+        self.assertTrue(self.hotel in self.albergatore.listaHotel(), 'Hotel non aggiunto')
 
 
 if __name__ == "__main__":
