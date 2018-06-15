@@ -1,5 +1,6 @@
 from django.db import models
-from datetime import date,datetime
+import django
+from django.utils import timezone
 
 class Albergatore(models.Model):
     nome = models.CharField(max_length=50,default='')
@@ -36,5 +37,5 @@ class Prenotazione(models.Model):
 
     camera=models.ForeignKey(Camera)
     utente=models.CharField(max_length=50,default='')
-    checkin=models.DateField(default=datetime.now())
-    checkout=models.DateField(default=datetime.now())
+    checkin=models.DateField(default=django.utils.timezone.now)
+    checkout=models.DateField(default=django.utils.timezone.now)
