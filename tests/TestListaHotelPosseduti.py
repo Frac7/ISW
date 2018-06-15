@@ -1,11 +1,15 @@
 #test di accettazione per la user story, visualizza la lista prenotazioni
-class TestListaPrenotazioni
+from GestioneHotel.models import Albergatore
+from django.test import TestCase, Client
+
+
+class TestListaPrenotazioni(TestCase):
     #task login user login, requisito
     def testLogin(self):
         #Creazione albergatore (nome, cognome, email, password
         email = "user@name"
         password = "password"
-        albergatore = Utente("Pippo", "Albergatore", email, password)
+        albergatore = Albergatore("Pippo", "Albergatore", email, password)
         #Controlla che i dati inseriti siano validi per il login
         assert autorizzaAccesso(albergatore.getEmail(), albergatore.getPassword())
 

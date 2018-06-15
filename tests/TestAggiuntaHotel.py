@@ -1,10 +1,27 @@
+from GestioneHotel.models import Albergatore, Servizio, Indirizzo, Hotel, Camera
 from django.test import TestCase
-from GestioneHotel.models import Albergatore
+import unittest
 
 
 class TestAggiuntaHotel(TestCase):
+    def setUp(self):
+        self.albergatore = Albergatore(nome='Franco', cognome='Pischedda', email='piscofranco@gmail.com',
+                                       password='password')
+        self.albergatore.save()
+        indirizzo = Indirizzo(via='Via Trincea Dei razzi', numero='152A')
+        indirizzo.save()
+        self.hotel = Hotel(nome='GrandRoyalHotel', descrizione='Hotel piu\' bello di Casteddu', citta='Cagliari',
+                           indirizzo=indirizzo, proprietario=self.albergatore)
+        self.hotel.save()
+
+    def testRegistrazione(self):
+        # errore perche albergatore non e iterabile, da correggere
+        self.assertEqual(self.albergatore.email, Albergatore.objects.get(self.albergatore).email)
+        self.assertEqual(self.albergatore.password, Albergatore.objects.get(self.albergatore).password)
+
     def testAggiungiHotel(self):
-        albergatore = Albergatore('Franco','Pischedda', 'piscofranco@gmail.com', 'password')
-        indirizzo= Indirizzo('Via Trincea Dei razzi', '152A')
-        hotel= Hotel('GrandRoyalHotel', 'Hotel piu\' bello di Casteddu','Cagliari', indirizzo,albergatore )
-        assert hotel in Albergatore.ListaHotel()
+        self.assertTrue(self.hotel in self.albergatore.listaHotel(), 'Hotel non aggiunta')
+
+
+if __name__ == "__main__":
+    unittest.main()
