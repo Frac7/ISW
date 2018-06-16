@@ -22,8 +22,8 @@
         </div>
 
         <div id="formLogin">
-            <label for="surname"><b>Username</b></label> <br>
-            <input type="text" placeholder="Inserire la Username" name="uname" required> <br>
+            <label for="log"><b>Username</b></label> <br>
+            <input type="email" placeholder="Inserire la Username" name="log" required> <br>
 
             <label for="psw"><b>Password</b></label> <br>
             <input type="password" placeholder="Inserire la Password" name="psw" required> <br>
@@ -32,12 +32,11 @@
             <label>
                 <input type="checkbox" checked="checked" name="remember"> Remember me
             </label>
-
         </div>
         <hr>
         <div id="ritorno">
             <button type="button" onclick="top.location.href='Main.html'" > Annulla</button>
-            <span class="psw"> Non hai ancora un <a href="http://localhost:63342/Progetto/templates/Registrazione.html"> account?</a></span>
+            <span class="psw"> Non hai ancora un <a  id="nonHaiAccount"  href="http://localhost:63342/Progetto/GestioneHotel/templates/Registrazione.html"> account?</a></span>
         </div>
     </form>
 </body>

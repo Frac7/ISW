@@ -20,31 +20,36 @@ header {
     background-color: #1A5EB6;
     border-radius: 3px;
     font: 20px/20px "Arial Bold", Times, serif;
-    height: 170px;
+    height: 185px;
 }
 
+#userImpostazioni{
+    margin-left: 7px;
+}
+
+
 a:link {
-    color: #FFFFFF;
-    background-color: transparent;
+    color: #1A5EB6;
+    background-color: #E2E6EB;
     text-decoration: none;
 }
 
 a:visited {
-    color: #FFFFFF;
-    background-color: transparent;
+    color: #1A5EB6;
+    background-color: #E2E6EB;
     text-decoration: none;
 }
 
 a:hover {
-    color: #5E92D4;
-    background-color: transparent;
+    color: #E2E6EB;
+    background-color: #011D42;
     text-decoration: none;
 }
 
 a:active {
-    color: yellow;
-    background-color: transparent;
-    text-decoration: underline;
+    color: #E2E6EB;
+    background-color: #08346D;
+    text-decoration: none;
 }
 
 #logo{
@@ -58,6 +63,13 @@ a:active {
     padding-top: 85px;
     margin-left: 10px;
 }
+
+#userImpostazioniC, #userImpostazioniA, #userImpostazioniH, #userImpostazioniAdd{
+    padding-top: 1px;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 2px;
+}
 /**********************************************************************************************************************/
 /* CSS Main */
 #intestazione{
@@ -69,11 +81,16 @@ a:active {
     float: right;
 }
 
+#userImpostazioniA{
+    margin-left: 2px;
+}
+
 #btnAccedi, #btnRegistrati, #btnLogout{
     border-radius: 3px;
-    height: 25px;
+    height: 26px;
     width: 95px;
     margin-right: 5px;
+
 }
 
 /* NON FUNZIONA QUESTA
@@ -81,15 +98,38 @@ a:active {
     color: #5E92D4;
 }
 */
-
-#divRicerca {
-    /*
-    border-style: solid;
-    border-color: #5E92D4;
-    */
-    margin-top: 20px;
+#testoPerCliente {
+    margin-left: 10px;
+    margin-top: 5px;
 }
 
+#testoPerCliente2{
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+#testoPerCliente3{
+    margin-top: 1px;
+}
+
+#divRicerca {
+    border-style: solid;
+    border-color: #5E92D4;
+    border-width: 2px;
+    border-radius: 2px;
+    margin-top: 25px;
+}
+
+#doveVai{
+    height: 30px;
+    width: 20%;
+
+}
+
+#doveVai, #dataArrivo, #dataPartenza{
+    height: 30px;
+    margin-right: 35px;
+}
 
 #divRisultatoRicerca{
     border-style: solid;
@@ -103,8 +143,24 @@ a:active {
     margin-top: 20px;
 }
 
+#btnCerca{
+    float: right;
+    height: 30px;
+    margin-top: 2px;
+    margin-right: 2px;
+    width: 14.55%;
+    border-radius: 2px;
+    background-color: #5E92D4;
+    color: #E2E6EB;
+
+}
+
 /**********************************************************************************************************************/
 /* CSS Home */
+#userImpostazioniAdd{
+    margin-left: -3px;
+}
+
 #tabellaPrenotazioni{
     margin-top: 10px;
 }
@@ -142,14 +198,65 @@ tr:nth-child(even) {
     font: 20px/20px "Times New Roman", Monospaced, serif;
 }
 
+#formAggiungiHotel{
+    border-radius: 2px;
+    border-color: #5E92D4;
+    border-style: solid;
+    margin-top: 2px;
+}
+
+#divHotelAggiunti{
+    border-radius: 2px;
+    border-color: #5E92D4;
+    border-style: solid;
+    margin-top: 2px;
+}
+
+/**********************************************************************************************************************/
+/* CSS Aggiungi Camera */
+#infoHotel{
+    border-radius: 2px;
+    border-color: #5E92D4;
+    border-style: solid;
+    margin-top: 2px;
+}
+
+#btnAggiungiCamera{
+    width: 100%;
+    height: 100%;
+    background: #08346D;
+    color: #E2E6EB;
+    font: 20px/20px "Times New Roman", Monospaced, serif;
+}
+
+#divCamereAggiunte{
+    border-radius: 2px;
+    border-color: #5E92D4;
+    border-style: solid;
+    margin-top: 2px;
+}
+
 /**********************************************************************************************************************/
 /* CSS Login */
 #imgProfiloContenitore, #formLogin, #ritorno{
     margin-left: 35%;
 }
 
+#nonHaiAccount:hover{
+    color: #1A5EB6;
+    background-color: #E2E6EB;
+    text-decoration: underline;
+}
 /**********************************************************************************************************************/
 /* CSS Registrazione*/
 #formRegistrazione{
     margin-left: 35%;
 }
+
+#btnAccediInRegistrazione{
+    border-radius: 3px;
+    height: 26px;
+    width: 150px;
+    margin-right: 5px;
+}
+

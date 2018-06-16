@@ -17,18 +17,38 @@
         <div id="userForm">
             <nav>
                 <div id="userLogin">
-                     <button id="btnLogout" type="button" value="esci" onclick="top.location.href='Main.html'" > Logout </button>
+                    <button id="btnLogout" type="button" value="esci" onclick="top.location.href='Main.html'"> <b> Logout</b></button>
                 </div>
                 <div id="userImpostazioni">
-                    <a href="Home.html"> Prenotazioni</a>
-                    <a href="AggiungiHotel.html"> Lista Hotel </a>
+                    <a id="userImpostazioniH" href="Home.html"> Prenotazioni</a>
+                    <a id="userImpostazioniAdd" href="AggiungiHotel.html"> Lista Hotel </a>
                 </div>
 
             </nav>
         </div>
     </header>
+    <div id="infoHotel">
+        QUI, LE INFORMAZIONI RELATIVE ALL'HOTEL IN QUESTO, SUL QUALE STO VISUALIZZANDO LE CAMERE
+    </div>
     <div id="divTastoAggiungi">
-        <button id="btnAggiungiHotel" type="button" value="aggiungi"> Aggiungi Camera </button>
+        <button id="btnAggiungiCamera" type="button" value="aggiungi"> Aggiungi Camera </button>
+    </div>
+     <div id="formAggiungiHotel"> TODO::Pensavo di aprire questo "form" nel momento in cui la persona preme sul tasto sopra "Aggiungi Camera"
+        <form>
+            <label for="numero"><b>Numero della camera</b></label> <br>
+            <input type="text"  name="numero" required> <br>
+
+            <label for="postiLetto"><b>Posti letto</b></label> <br>
+            <input type="number" name="postiLetto" required> </input> <br>
+
+            <input type="checkbox" name="servizio1" value="tv"> "TV" <br>
+            <input type="checkbox" name="servizio2" value="air"> "Aria condizionata"<br>
+            <input type="checkbox" name="servizio3" value="rs"> "Servizio in camera"<br>
+            <button type="submit"> Aggiungi</button>
+        </form>
+    </div>
+    <div id="divCamereAggiunte">
+        QUI, LE CAMERE DELL'HOTEL IN QUESTIONE CHE l'ALBERGATORE POSSIDERE
     </div>
 </body>
 </html>

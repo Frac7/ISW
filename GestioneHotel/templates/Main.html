@@ -17,27 +17,47 @@
         <div id="userForm">
             <nav>
                 <div id="userLogin">
-                     <button id="btnRegistrati" type="button" value="registrati" onclick="top.location.href='Registrazione.html'"  > Registrati </button>
-                     <button id="btnAccedi" type="button" value="accedi" onclick="top.location.href='Login.html'" > Accedi </button>
+                    <button id="btnRegistrati" type="button" value="registrati" onclick="top.location.href='Registrazione.html'">  <b> Registrati </b> </button>
+                    <button id="btnAccedi" type="button" value="accedi" onclick="top.location.href='Login.html'">  <b> Accedi </b> </button>
                 </div>
                 <div id="userImpostazioni">
-
-                    <a href="Cookies.html"> Cookies </a>
-                    <a href="Assistenza.html"> Assistenza </a>
+                    <a id="userImpostazioniC" href="Cookies.html">  Cookies </a>
+                    <a id="userImpostazioniA" href="Assistenza.html"> Assistenza </a>
                 </div>
 
             </nav>
         </div>
     </header>
+    <div id="testoPerCliente">
+        <h1 id="testoPerCliente2"> Tutti meritano una vacanza. Cosa aspetti?</h1>
+        <p id="testoPerCliente3"> I migliori hotel, pronti a proporti la loro camera per la tua vacanza. </p>
+    </div>
     <div id="divRicerca">
-        <input type="search" placeholder="Dove vuoi andare?">
-        Data Arrivo <input id="dataArrivo" type="date">
-        Data Partenza <input id="dataPartenza" type="date">
-        Numero di persone<input id="quantita" type="number" min="1">
-        <input id="btnCerca" type="submit" value="Cerca">
+        <form>
+            <label for="dove?"> </label>
+            <input id="doveVai" type="search" placeholder="Dove vuoi andare?" name="dove?" required>
+
+            <label for="dataA?"> </label>
+            Data Arrivo <input id="dataArrivo" type="date" name="dataA?" required>
+
+            <label for="dataP?"> </label>
+            Data Partenza <input id="dataPartenza" type="date" name="dataP?" required>
+
+            <label for="numeroPosti?"> </label>
+            Numero di persone<input id="quantiSiete" type="number" min="1" name="numeroPosti?" required>
+
+            <button id="btnCerca" type="submit"> <b> Cerca</b> </button>
+        </form>
     </div>
     <div id="divRisultatoRicerca">
         RISULTATI RICERCA QUI
+        <p> (TODO::da decidere dove andrà) Dopo la selezione dell'hotel, la persona dovrà inserire i propri dati:</p>
+        <form>
+            <label for="email"><b>Email</b></label> <br>
+            <input type="text"  name="email" required> <br>
+
+            <button type="submit"> Invia Prenotazione</button>
+        </form>
     </div>
     <div id="divSuggerimenti">
         POSTI CONSIGLIATI QUI
