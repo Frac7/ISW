@@ -14,10 +14,10 @@ def listaCamere(request, hotelID):
     except Hotel.DoesNotExist:
         hotel = None
     #Date tutte le camere registrare nel db, prende quelle presenti in hotel
-    lista = []
-    for camera in Camera.objects.all():
-        if camera.hotel.__eq__(hotel):
-            lista.append(camera)
+    if hotel != None:
+        lista = Camera.objects.filter(hotel=hotel)
+    else:
+        lista = []
     #Qui ci sono ancora le pagine html statiche da rendere dinamiche
     return render(request,
                   "InfoHotelAggiungiCamera.html", {
@@ -33,7 +33,7 @@ def dettagliHotel(request, hotelID):
     #Dato un id, si restituisce l'hotel corrispondente
     return render(request,
                   "InfoHotelAggiungiCamera.html", {
-                      'hotel': hotel #lista delle camere da scorrere in html
+                      'hotel': hotel
                   })
 #Albergatore
 def autorizzaAccesso(request, email, password):
