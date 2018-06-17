@@ -39,8 +39,9 @@
         <button id="btnAggiungiCamera" type="button" value="aggiungi"> Aggiungi Camera </button>
     </div>
      <div id="formAggiungiHotel"> TODO::Pensavo di aprire questo "form" nel momento in cui la persona preme sul tasto sopra "Aggiungi Camera"
-        <form>
-            <label for="numero"><b>Numero della camera</b></label> <br>
+        <!--TODO: form action (dipende da come settiamo urls.py)-->
+         <form action="">
+            <!--<label for="numero"><b>Numero della camera</b></label> <br>
             <input type="text"  name="numero" required> <br>
 
             <label for="postiLetto"><b>Posti letto</b></label> <br>
@@ -49,7 +50,10 @@
             <input type="checkbox" name="servizio1" value="tv"> "TV" <br>
             <input type="checkbox" name="servizio2" value="air"> "Aria condizionata"<br>
             <input type="checkbox" name="servizio3" value="rs"> "Servizio in camera"<br>
-            <button type="submit"> Aggiungi</button>
+            -->
+             {% csrf_token %}
+            {{ form }}
+             <button type="submit"> Aggiungi</button>
         </form>
     </div>
     <div id="divCamereAggiunte">

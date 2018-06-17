@@ -73,6 +73,21 @@ class TestHotel(TestCase):
         self.assertContains(response, self.hotel.indirizzo.via)
         self.assertContains(response, self.hotel.indirizzo.numero)
 
+    def testViewsAggiungiCamera(self):
+        #Questo test e' da rivedere
+        response = self.client.post("/Login.html/",
+                                    {"email": self.albergatore.email, "password": self.albergatore.password})
+        self.assertTrue(response)
+        response = self.client.get("/InfoHotelAggiungiCamera.html?hotelID=" + self.hotel.id.__str__() + "/",
+                                   follow=True)
+        #Invio form
+        response = self.client.post("/Login.html/",
+                                    {"numeroCamera": "101", "postiLettoCamera": "1"})
+        # Si controlla che la risposta contenga i dati della camera inserita
+        self.assertContains(response, "101")
+        self.assertContains(response, "1")
+
+
 if __name__ == "__main__":
     unittest.main()
 
