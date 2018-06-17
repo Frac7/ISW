@@ -49,8 +49,20 @@ def aggiungiCamera(request, hotelID):
     #Per ora viene restituita la stessa pagina in tutti i casi
 
 #Albergatore
-def autorizzaAccesso(request, email, password):
-    pass
+def aggiungiAlbergatore(request):
+    if request.method== "POST":
+        registrazioneAlbergatore= RegistrazioneAlbergatore(request.POST)
+        if registrazioneAlbergatore.is_valid():
+            nuovoAlbergatore= Albergatore(nome=registrazioneAlbergatore.cleaned_data['nome'],
+                                          cognome=registrazioneAlbergatore.cleaned_data['cognome'],
+                                          email=registrazioneAlbergatore.cleaned_data['email'],
+                                          password=registrazioneAlbergatore.cleaned_data['password'])
+            nuovoAlbergatore.save()
+            return HttpResponse("Albergatore salvato")#what? copiato senza sapere cosa SIA
+        else:
+            registrazioneAlbergatore=RegistrazioneAlbergatore()
+    return render(request, "Registrazione.html", {"form" : registrazioneAlbergatore})
+
 def listaHotel(request, albergatoreID):
     try:
         albergatore = Albergatore.objects.get(id=albergatoreID)
@@ -65,9 +77,20 @@ def listaHotel(request, albergatoreID):
                         'listaHotel' : listaHotel
                       })
 
-    pass
 def prenotazionePerAlbergatore(request, albergatoreID):
-    pass
+    try:
+        albergatore=Albergatore.objects.get(id=albergatoreID)
+    except Albergatore.DoesNotExist:
+        albergatore= None
+        listaPrenotazioni = []
+        for prenotazione in Prenotazione.objects.all():
+            if prenotazione.camera.hotel.proprietario.__eq__(albergatore):
+                listaPrenotazioni.append(prenotazione)
+        return render(request,
+                      "Home_provaDinamica.html",{
+                        'listaPrenotazioni':listaPrenotazioni
+                      })
+
 #Camera
 def disponibilita(request, cameraID, dal, al):
     pass

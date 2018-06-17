@@ -20,29 +20,34 @@
     </header>
     <form>
         <div id="formRegistrazione">
-            <h1 id="intestazionePagina"> Registrati </h1>
-            <p id="intestazioneSotto"> Per favore, compili questi campi per creare un account.</p>
+            <!--Form registrazione da forms.py-->
+            <form action="">
+                <h1 id="intestazionePagina"> Registrati </h1>
+                <p id="intestazioneSotto"> Per favore, compili questi campi per creare un account.</p>
 
-            <div id="campiPerRegistrazione">
-                 <label for="name"><b>Nome</b></label> <br>
-                <input type="text"  name="name" required> <br>
+                <div id="campiPerRegistrazione">
 
-                 <label for="surname"><b>Email</b></label> <br>
-                <input type="text"  name="surname" required> <br>
+                    <label for="nome"><b>Nome</b></label> <br>
+                    <input type="text"  name="name" required> <br>
 
-                <label for="email"><b>Email</b></label> <br>
-                <input type="text"  name="email" required> <br>
+                    <label for="cognome"><b>Email</b></label> <br>
+                    <input type="text"  name="surname" required> <br>
 
-                <label for="psw"><b>Password</b></label> <br>
-                <input type="password"  name="psw" required> <br>
+                    <label for="email"><b>Email</b></label> <br>
+                    <input type="text"  name="email" required> <br>
 
-                <label for="psw-repeat"><b>Riinserire la Password</b></label> <br>
-                <input type="password" name="psw-repeat" required> <br>
-            </div>
-            <div id="tastiRegistrazione" class="clearfix">
-                <button type="button" onclick="top.location.href='Main.html'" > Annulla</button>
-                <button type="submit" class="signupbtn"> Accedi</button>
-            </div>
+                    <label for="password"><b>Password</b></label> <br>
+                    <input type="password"  name="psw" required> <br>
+
+                </div>
+                {% csrf_token %}
+            {{ form }}
+                <div id="tastiRegistrazione" class="clearfix">
+                    <button type="button" onclick="top.location.href='Main.html'" > Annulla</button>
+                    <button type="submit" class="signupbtn"> Registrati</button>
+                </div>
+            </form>
+
         </div>
     </form>
 </body>
