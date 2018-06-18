@@ -15,7 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from GestioneHotel import views
+
+admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^InfoHotelAggiungiCamera/(?P<hotelID>\d+)/', views.listaCamere, name='hotelID'),
+    url(r'^InfoHotelAggiungiCamera/(?P<hotelID>\d+)/Aggiungi', views.aggiungiCamera, name='hotelID'), #TODO: form aggiungi camera
 ]

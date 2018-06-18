@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals #Per lettere accentate...
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+
 from GestioneHotel.models import *
 from GestioneHotel.forms import *
 from django.shortcuts import render
@@ -17,13 +19,23 @@ def listaCamere(request, hotelID):
     #Date tutte le camere registrare nel db, prende quelle presenti in hotel
     if hotel != None:
         lista = Camera.objects.filter(hotel=hotel)
+        servizi = {} #Dizionario: key = id camera, value = servizio (ottenuto filtrando prima i servizi per camera e poi i servizi per id)
+        for camera in lista:
+            serviziPerCamera = []
+            for servizio in ServiziDisponibili.objects.filter(camera=camera.id):
+                serviziPerCamera.append(Servizio.objects.filter(id=servizio.id))
+            servizi[camera.id] = serviziPerCamera
+        aggiungiCameraForm = AggiungiCameraForm()
     else:
         lista = []
+        servizi = {}
+        aggiungiCameraForm = None
     #Qui ci sono ancora le pagine html statiche da rendere dinamiche
-    return render(request,
-                  "InfoHotelAggiungiCamera.html", {
+    return render(request, "InfoHotelAggiungiCamera_provaDinamica.html", {
                       "hotel": hotel,
-                      "camere": lista #lista delle camere da scorrere in html
+                      "camere": lista, #lista delle camere da scorrere in html
+                        "servizi": servizi,
+        "form": aggiungiCameraForm
                   })
 #Collegato al form aggiungi camera
 @login_required(login_url='/Login.html') #è da provare
@@ -44,9 +56,7 @@ def aggiungiCamera(request, hotelID):
             #TODO: associazione id camera e servizi (n a m)
             nuovaCamera.save()
             #Salvataggio camera nel db
-    return render(request,
-                "InfoHotelAggiungiCamera.html?hotelID = " + hotelID + "/",)
-    #Per ora viene restituita la stessa pagina in tutti i casi
+    return HttpResponseRedirect("InfoHotelAggiungiCamera/" + hotelID + "/")
 
 #Albergatore
 def aggiungiAlbergatore(request):
@@ -61,35 +71,35 @@ def aggiungiAlbergatore(request):
             return HttpResponse("Albergatore salvato")#what? copiato senza sapere cosa SIA
         else:
             registrazioneAlbergatore=RegistrazioneAlbergatore()
-    return render(request, "Registrazione.html", {"form" : registrazioneAlbergatore})
+        return render(request, "Registrazione.html", {"form" : registrazioneAlbergatore})
 
 def listaHotel(request, albergatoreID):
     try:
         albergatore = Albergatore.objects.get(id=albergatoreID)
     except Albergatore.DoesNotExist:
         albergatore = None
-        listaHotel = []
-        for hotel in Hotel.objects.all():
-            if hotel.proprietario.__eq__(albergatore):
-                listaHotel.append(hotel)
-        return render(request,
-                      "AggiungiHotel_provaDinamica.html",{
-                        'listaHotel' : listaHotel
-                      })
+    listaHotel = []
+    for hotel in Hotel.objects.all():
+        if hotel.proprietario.__eq__(albergatore):
+            listaHotel.append(hotel)
+    return render(request,
+                    "AggiungiHotel_provaDinamica.html",{
+                    'listaHotel' : listaHotel
+                    })
 
 def prenotazionePerAlbergatore(request, albergatoreID):
     try:
         albergatore=Albergatore.objects.get(id=albergatoreID)
     except Albergatore.DoesNotExist:
         albergatore= None
-        listaPrenotazioni = []
-        for prenotazione in Prenotazione.objects.all():
-            if prenotazione.camera.hotel.proprietario.__eq__(albergatore):
-                listaPrenotazioni.append(prenotazione)
-        return render(request,
-                      "Home_provaDinamica.html",{
-                        'listaPrenotazioni':listaPrenotazioni
-                      })
+    listaPrenotazioni = []
+    for prenotazione in Prenotazione.objects.all():
+        if prenotazione.camera.hotel.proprietario.__eq__(albergatore):
+            listaPrenotazioni.append(prenotazione)
+    return render(request,
+                    "Home_provaDinamica.html",{
+                    'listaPrenotazioni':listaPrenotazioni
+                    })
 
 #Camera
 def disponibilita(request, cameraID, dal, al):

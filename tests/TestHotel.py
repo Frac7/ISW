@@ -37,11 +37,11 @@ class TestHotel(TestCase):
         self.assertEqual(Camera.objects.all().get(id=self.camera.id), Camera.objects.filter(hotel=self.hotel).get(id=self.camera.id))
 
     def testViewsListaCamere(self):
-        #Per visualizzare la lista camere e' necessario loggarsi, si manda una richiesta POSR con i dati
+        #Per visualizzare la lista camere e' necessario loggarsi, si manda una richiesta POST con i dati
         response = self.client.post("/Login.html/", {"email": self.albergatore.email, "password": self.albergatore.password})
         self.assertTrue(response)
         #Visualizzazione pagina lista camere di un certo hotel
-        response = self.client.get("/InfoHotelAggiungiCamera.html?hotelID=" + self.hotel.id.__str__() +"/", follow=True)
+        response = self.client.get("/InfoHotelAggiungiCamera/" + self.hotel.id.__str__() +"/", follow=True)
         #Si controlla che la risposta contenga i dati delle camere
         self.assertContains(response, self.camera.numero)
         self.assertContains(response, self.camera.postiLetto)
@@ -52,10 +52,10 @@ class TestHotel(TestCase):
         self.assertNotContains(response, "WI-FI")
 
     def testViewsUtenteNonLoggato(self):
-        response = self.client.get("/InfoHotelAggiungiCamera.html?hotelID=" + self.hotel.id.__str__() +"/")
+        response = self.client.get("/InfoHotelAggiungiCamera/" + self.hotel.id.__str__() +"/")
         self.assertEquals(response.status_code, 302)
         #Redirection (login e poi info hotel)
-        self.assertEquals(response.url, "/Login.html/?next=/InfoHotelAggiungiCamera.html/")
+        self.assertEquals(response.url, "/Login.html?next=/InfoHotelAggiungiCamera/" + self.hotel.id.__str__() +"/")
 
     def testModelsHotel(self):
         self.assertEqual(len(Hotel.objects.all()), 1, "La lunghezza della lista hotel e\' diversa da 1")
@@ -66,7 +66,7 @@ class TestHotel(TestCase):
     def testViewsHotel(self):
         response = self.client.post("/Login.html/", {"email": self.albergatore.email, "password": self.albergatore.password})
         self.assertTrue(response)
-        response = self.client.get("/InfoHotelAggiungiCamera.html?hotelID=" + self.hotel.id.__str__() + "/", follow=True)
+        response = self.client.get("/InfoHotelAggiungiCamera/" + self.hotel.id.__str__() + "/", follow=True)
         #Si controlla che la risposta contenga i dati dell'hotel
         self.assertContains(response, self.hotel.nome)
         self.assertContains(response, self.hotel.descrizione)
@@ -78,15 +78,12 @@ class TestHotel(TestCase):
         response = self.client.post("/Login.html/",
                                     {"email": self.albergatore.email, "password": self.albergatore.password})
         self.assertTrue(response)
-        response = self.client.get("/InfoHotelAggiungiCamera.html?hotelID=" + self.hotel.id.__str__() + "/",
-                                   follow=True)
         #Invio form
-        response = self.client.post("/Login.html/",
+        response = self.client.post("/InfoHotelAggiungiCamera/" + self.hotel.id.__str__() + "/Aggiungi",
                                     {"numeroCamera": "101", "postiLettoCamera": "1"})
         # Si controlla che la risposta contenga i dati della camera inserita
         self.assertContains(response, "101")
         self.assertContains(response, "1")
-
 
 if __name__ == "__main__":
     unittest.main()
