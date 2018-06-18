@@ -11,17 +11,17 @@
 <body>
     <header>
         <div id="intestazione">
-            <img id="logo" src="../static/img//LogoBooking.png" alt="Logo" width="100" height="100">
-            <h1 id="intLogo"> The Reception.com</h1>
+            <img id="logo">
+            <h1> The Reception.com</h1>
         </div>
         <div id="userForm">
             <nav>
                 <div id="userLogin">
-                    <button id="btnLogout" type="button" value="esci" onclick="top.location.href='Main.html'"> <b> Logout </b> </button>
+                     <button id="btnLogout" type="button" value="esci" onclick="top.location.href='Main.html'" > Logout </button>
                 </div>
                 <div id="userImpostazioni">
-                    <a id="userImpostazioniH" href="Home.html"> Prenotazioni</a>
-                    <a id="userImpostazioniAdd" href="AggiungiHotel.html"> Lista Hotel </a>
+                    <a href="Home.html"> Prenotazioni</a>
+                    <a href="AggiungiHotel.html"> Lista Hotel </a>
                 </div>
 
             </nav>
@@ -30,26 +30,26 @@
 
     <div id="divTastoAggiungi">
         <button id="btnAggiungiHotel" type="button" value="aggiungi"> Aggiungi Hotel </button>
+        <!--al click di questo deve aprirsi il form? -->
     </div>
-    <div id="formAggiungiHotel"> TODO::Pensavo di aprire questo "form" nel momento in cui la persona preme sul tasto sopra "Aggiungi Hotel"
-        <form>
-            <label for="nomeHotel"><b>Nome dell'Hotel</b></label> <br>
-            <input type="texta"  name="nomeHotel" required> <br>
-
-            <label for="descrizioneHotel"><b>Descrizione</b></label> <br>
-            <textarea rows="4" cols="22" name="descrizioneHotel" required> </textarea> <br>
-
-            <label for="cittaHotel"><b>Città</b></label> <br>
-            <input type="password"  name="cittaHotel" required> <br>
-
-            <label for="indirizzoHotel"><b>Indirizzo</b></label> <br>
-            <input type="password" name="indirizzoHotel" required> <br>
-
-            <button type="submit"> Aggiungi</button>
+    <div id="formAggiungiHotel">
+         <form action="Aggiungi" method="post">
+             {% csrf_token %}
+             <br>
+                {{ form }}
+             <br>
+         <button type="submit" value="Aggiungi"> Aggiungi</button>
         </form>
     </div>
     <div id="divHotelAggiunti">
-        QUI, GLI HOTEL CHE l'ALBERGATORE POSSIDERE
+
+        <h1>I tuoi Hotel</h1>
+
+        {% for hotel in listaHotel %}
+
+            <h2> {{ hotel.nome }}</h2>
+
+        {% endfor %}
     </div>
 </body>
 </html>

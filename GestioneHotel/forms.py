@@ -13,3 +13,15 @@ class RegistrazioneAlbergatore(forms.Form):
     cognome = forms.CharField(label="cognome", max_length=50,required=True)
     email = forms.EmailField(label="email", max_length=50,required=True)
     password = forms.CharField(label="password", max_length=32,required=True)
+
+class AggiungiHotelForm(forms.Form):
+     nome = forms.CharField(label="Nome", max_length=30, required=True,
+                               widget=forms.TextInput(attrs={'id': 'nomeHotel'}))
+     descrizione = forms.CharField(label='Descrizione', max_length=100, required=True,
+                                      widget=forms.TextInput(attrs={'id': 'descrizioneHotel'}))
+     citta = forms.CharField(label='Citta', max_length=30, required=True,
+                                widget=forms.TextInput(attrs={'id': 'cittaHotel'}))
+     via = forms.CharField(label='Via', max_length=50, required=True,
+                              widget=forms.TextInput(attrs={'id': 'viaHotel'}))
+     numeroCivico = forms.CharField(label='NumeroCivico', max_length=10, required=True,
+                                       widget=forms.TextInput(attrs={'id': 'numeroHotel'}))

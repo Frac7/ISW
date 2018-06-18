@@ -69,6 +69,27 @@ def aggiungiAlbergatore(request):
             registrazioneAlbergatore=RegistrazioneAlbergatore()
         return render(request, "Registrazione.html", {"form" : registrazioneAlbergatore})
 
+
+def aggiungiHotel(request, albergatoreID):
+    try:
+        albergatore=Albergatore.objects.get(id=albergatoreID)
+    except Albergatore.DoesNotExist:
+        albergatore=None
+    if request.method=="POST":
+        aggiungiHotelForm=AggiungiHotelForm(request.POST)
+        if aggiungiHotelForm.is_valid():
+            nuovoIndirizzo=Indirizzo(via=aggiungiHotelForm.cleaned_data['via'],
+                                     numero=aggiungiHotelForm.cleaned_data['numero'])
+            nuovoIndirizzo.save()
+
+            nuovoHotel=Hotel(nome=aggiungiHotelForm.cleaned_data['nome'],
+                             descrizione=aggiungiHotelForm.cleaned_data['descrizione'],
+                             citta=aggiungiHotelForm.cleaned_data['citta'],
+                             indirizzo=nuovoIndirizzo,
+                             proprietario=albergatore)
+            nuovoHotel.save()
+    return HttpResponseRedirect("AggiungiHotel/" + albergatoreID + "/")
+
 def listaHotel(request, albergatoreID):
     try:
         albergatore = Albergatore.objects.get(id=albergatoreID)
@@ -79,8 +100,9 @@ def listaHotel(request, albergatoreID):
         if hotel.proprietario.__eq__(albergatore):
             listaHotel.append(hotel)
     return render(request,
-                    "AggiungiHotel_provaDinamica.html",{
-                    'listaHotel' : listaHotel
+                    "AggiungiHotel.html",{
+                    'listaHotel' : listaHotel,
+                    'form':AggiungiHotelForm
                     })
 
 def prenotazionePerAlbergatore(request, albergatoreID):
@@ -93,7 +115,7 @@ def prenotazionePerAlbergatore(request, albergatoreID):
         if prenotazione.camera.hotel.proprietario.__eq__(albergatore):
             listaPrenotazioni.append(prenotazione)
     return render(request,
-                    "Home_provaDinamica.html",{
+                    "Home.html",{
                     'listaPrenotazioni':listaPrenotazioni
                     })
 

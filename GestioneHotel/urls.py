@@ -19,8 +19,13 @@ from GestioneHotel import views
 
 admin.autodiscover()
 
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^Home/(?P<albergatoreID>\d+)', views.prenotazionePerAlbergatore),
     url(r'^InfoHotelAggiungiCamera/(?P<hotelID>\d+)/', views.listaCamere, name='hotelID'),
     url(r'^InfoHotelAggiungiCamera/(?P<hotelID>\d+)/Aggiungi', views.aggiungiCamera, name='hotelID'), #TODO: form aggiungi camera
+    url(r'AggiungiHotel/(?P<albergatoreID>\d+)', views.listaHotel, name ='albergatoreID'),
+    url(r'AggiungiHotel/(?P<albergatoreID>\d+)/Aggiungi', views.aggiungiHotel, name ='albergatoreID')
 ]
+

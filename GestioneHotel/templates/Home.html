@@ -28,62 +28,15 @@
         </div>
         <div id="tabellaPrenotazioni">
             <table>
+                {% for prenotaziona in listaPrenotazioni %}
                 <tr>
-                    <th> Nome Hotel </th>
-                    <th> Camera </th>
-                    <th> Email Utente </th>
-                    <th> Data Arrivo </th>
-                    <th> Data Partenza </th>
+                    <th> {{prenotazione.camera.hotel.nome}} </th>
+                    <th> {{prenotazione.camera.numero}} </th>
+                    <th> {{prenotazione.utente}} </th>
+                    <th> {{prenotazione.checkin}} </th>
+                    <th> {{prenotazione.checkout}} </th>
                 </tr>
-                <tr>
-                    <td> Best Hotel </td>
-                    <td> Camera n°1 </td>
-                    <td> g6@gmail.com </td>
-                    <td> 01/01/2018 </td>
-                    <td> 01/12/2018 </td>
-                </tr>
-                <tr>
-                    <td> Golden Hotel </td>
-                    <td> Camera n°19 </td>
-                    <td> oscar.wilde@gmail.com </td>
-                    <td> 18/01/2018 </td>
-                    <td> 23/01/2018 </td>
-                </tr>
-                <tr>
-                    <td> Best Hotel </td>
-                    <td> Camera n°3 </td>
-                    <td> zanzibar@gmail.com </td>
-                    <td> 30/01/2018 </td>
-                    <td> 04/02/2018 </td>
-                </tr>
-                <tr>
-                    <td> Golden Hotel </td>
-                    <td> Camera n°16 </td>
-                    <td> ababahalamaga@gmail.com </td>
-                    <td> 01/02/2018 </td>
-                    <td> 04/02/2018 </td>
-                </tr>
-                <tr>
-                    <td> Gold Hotel </td>
-                    <td> Camera n°17 </td>
-                    <td> abdu.la@gmail.com </td>
-                    <td> 10/02/2018 </td>
-                    <td> 07/03/2018 </td>
-                </tr>
-                <tr>
-                    <td> Oxygen Residence </td>
-                    <td> Camera n°32 </td>
-                    <td> dzhuman.bohdan@gmail.com </td>
-                    <td> 30/03/2018 </td>
-                    <td> 04/04/2018 </td>
-                </tr>
-                <tr>
-                    <td> Oxygen Residence </td>
-                    <td> Camera n°31 </td>
-                    <td> xiaoming@gmail.com </td>
-                    <td> 01/04/2018 </td>
-                    <td> 03/04/2018 </td>
-                </tr>
+                {% endfor %}
             </table>
         </div>
     </header>
