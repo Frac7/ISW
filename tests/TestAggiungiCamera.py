@@ -57,7 +57,6 @@ class TestAggiungiCamera(TestCase):
         camere = Camera.objects.filter(hotel=self.hotel)
         for camera in camere:
             self.assertEqual(camera, self.camera)
-            self.assertContains(camera, camera.hotel.listaCamere())
 
 if __name__ == "__main__":
     unittest.main()

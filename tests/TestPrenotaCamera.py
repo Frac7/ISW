@@ -30,7 +30,7 @@ class TestPrenotaCamera(TestCase):
                                          checkout=date(2011, 8, 30))
         self.prenotazione.save()
     def testPrenotaCamera(self):
-        self.assertTrue(self.prenotazione in self.albergatore.PrenotazioniPerAlbergatore(), "Prenotazione non aggiunta")
+        self.assertTrue(self.prenotazione in self.albergatore.prenotazioniPerAlbergatore(), "Prenotazione non aggiunta")
 
 if __name__ == "__main__":
     unittest.main()
