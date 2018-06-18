@@ -51,6 +51,10 @@ class TestListaPrenotazioni(TestCase):
         prenotazione2.save()
         listaPrenotazioni.append(prenotazione2)
 
+        #Controlla presenza prenotazioni nella lista
+        assert listaPrenotazioni[0] == prenotazione1
+        assert listaPrenotazioni[1] == prenotazione2
+
         #assert autorizzaAccesso(albergatore.getEmail(), albergatore.getPassword())
 
     #Una volta loggato, l'utente accede dal menu alla lista delle prenotazioni che li mostra la lista delle prenotazioni
