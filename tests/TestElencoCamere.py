@@ -4,7 +4,7 @@ from GestioneHotel.models import *
 import unittest
 
 class TestElencoCamere(TestCase):
-    def testElecoCamere(self):
+    def setUp(self):
         #-------------------(IL VECCHIO CODICE, PRESENTE PRIMA CHE CI SCRIVA IO)--------------------
         # Creazione albergatore (nome, cognome, email, password
         # albergatore=Albergatore("Nome","Cognome","email","password")
@@ -52,8 +52,8 @@ class TestElencoCamere(TestCase):
         camera2.save()
         listaCamere.append(camera2)
 
-        assert listaCamere[0] == camera1
-        assert listaCamere[1] == camera2
+        self.assertEqual(listaCamere[0], camera1, "Camera 1 e' presente nella lista")
+        self.assertEqual(listaCamere[1], camera2, "Camera 2 e' presente nella lista")
 
     def testListaCamere(self):
         self.assertEqual(len(Camera.objects.all()), 2)
