@@ -1,3 +1,4 @@
+#TODO: sostituire accesso ai parametri con getters
 #Test di accettazione per user story aggiungi camera
 from GestioneHotel.models import *
 from django.test import TestCase, Client
@@ -56,6 +57,7 @@ class TestAggiungiCamera(TestCase):
         camere = Camera.objects.filter(hotel=self.hotel)
         for camera in camere:
             self.assertEqual(camera, self.camera)
+            self.assertContains(camera, camera.hotel.listaCamere())
 
 if __name__ == "__main__":
     unittest.main()

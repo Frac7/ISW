@@ -1,3 +1,4 @@
+#TODO: sostituire accesso ai parametri con getters
 #Test unitario classe Hotel
 from GestioneHotel.models import *
 from django.test import TestCase, Client
@@ -34,6 +35,7 @@ class TestHotel(TestCase):
         camera = Camera.objects.all().get(id=self.camera.id)
         self.assertEqual(camera.hotel, self.hotel, "Camera non aggiunta")
         self.assertEqual(len(Camera.objects.all()), 1, "La lunghezza della lista camera e\' diversa da 1")
+        self.assertEqual(len(camera.hotel.listaCamere()), 1, "La lunghezza della lista camera e\' diversa da 1")
         self.assertEqual(Camera.objects.all().get(id=self.camera.id), Camera.objects.filter(hotel=self.hotel).get(id=self.camera.id))
 
     def testViewsListaCamere(self):

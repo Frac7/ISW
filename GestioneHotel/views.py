@@ -2,7 +2,6 @@
 from __future__ import unicode_literals #Per lettere accentate...
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-
 from GestioneHotel.models import *
 from GestioneHotel.forms import *
 from django.shortcuts import render
@@ -18,13 +17,10 @@ def listaCamere(request, hotelID):
         hotel = None
     #Date tutte le camere registrare nel db, prende quelle presenti in hotel
     if hotel != None:
-        lista = Camera.objects.filter(hotel=hotel)
+        lista = hotel.listaCamere()
         servizi = {} #Dizionario: key = id camera, value = servizio (ottenuto filtrando prima i servizi per camera e poi i servizi per id)
         for camera in lista:
-            serviziPerCamera = []
-            for servizio in ServiziDisponibili.objects.filter(camera=camera.id):
-                serviziPerCamera.append(Servizio.objects.filter(id=servizio.id))
-            servizi[camera.id] = serviziPerCamera
+            servizi[camera.id] = camera.listaServizi()
         aggiungiCameraForm = AggiungiCameraForm()
     else:
         lista = []
