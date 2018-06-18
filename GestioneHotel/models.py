@@ -19,14 +19,14 @@ class Albergatore(models.Model):
 class Indirizzo(models.Model):
     via = models.CharField(max_length=50,default="")
     numero = models.CharField(max_length=5,default="")
-    def __str__(self):
-        return "%s, %s", self.via, self.numero
+
 
 class Servizio(models.Model):
     nome = models.CharField(max_length=15,default="")
     descrizioneServizio = models.TextField(default="")
-    def __str__(self):
-        return "%s, %s", self.nome, self.descrizioneServizio
+
+    def __unicode__(self):
+        return "%s: %s " % (self.nome, self.descrizioneServizio)
 
 class Hotel(models.Model):
     nome = models.CharField(max_length=50,default="")

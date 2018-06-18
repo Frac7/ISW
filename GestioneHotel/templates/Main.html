@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
+{% load staticfiles %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author">
     <meta name="keywords" content="the reception reseption booking hotel prenota">
-    <link rel="stylesheet" type="text/css" href="../static/Style.css" media="screen">
+    <!-- <link rel="stylesheet" type="text/css" href="../static/Style.css" media="screen"> -->
+    <link rel="stylesheet" href="{% static 'Style.css' %}">
     <title>The Reception</title>
 </head>
 <body>
@@ -33,7 +35,13 @@
         <p id="testoPerCliente3"> I migliori hotel, pronti a proporti la loro camera per la tua vacanza. </p>
     </div>
     <div id="divRicerca">
-        <form>
+        <form action="ListaCamereDisponibili/" method="post">
+        {% csrf_token %}
+            {{ form }}
+            {% if noresult == True %}
+                Nessuna Camera Trovata
+            {% endif %}
+            <!--
             <label for="dove?"> </label>
             <input id="doveVai" type="search" placeholder="Dove vuoi andare?" name="dove?" required>
 
@@ -45,9 +53,10 @@
 
             <label for="numeroPosti?"> </label>
             Numero di persone<input id="quantiSiete" type="number" min="1" name="numeroPosti?" required>
-
+            -->
             <button id="btnCerca" type="submit"> <b> Cerca</b> </button>
         </form>
+
     </div>
     <div id="divRisultatoRicerca">
         RISULTATI RICERCA QUI

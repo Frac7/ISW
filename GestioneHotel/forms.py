@@ -1,4 +1,5 @@
 from django import forms
+from GestioneHotel.models import *
 
 #Collegato alla view aggiungiCamera
 class AggiungiCameraForm(forms.Form):
@@ -25,3 +26,25 @@ class AggiungiHotelForm(forms.Form):
                               widget=forms.TextInput(attrs={'id': 'viaHotel'}))
      numeroCivico = forms.CharField(label='NumeroCivico', max_length=10, required=True,
                                        widget=forms.TextInput(attrs={'id': 'numeroHotel'}))
+
+class FormRicerca(forms.Form):
+
+    #recupero l'elenco delle citta dagli hotel
+    elencoCitta = [(hotel.citta, hotel.citta) for hotel in Hotel.objects.order_by('citta')]
+    # html select della citta dell'elenco delle citta disponibili
+    citta=forms.ChoiceField(label="Destinazione",widget=forms.Select, choices=elencoCitta)
+    # input tata arrivo
+    dataArrivo = forms.DateField(label="Arrivo",widget=forms.SelectDateWidget())
+    #input data partenza
+    dataPartenza = forms.DateField(label="Partenza",widget=forms.SelectDateWidget())
+    elencoPosti=[(i,i) for i in range(1, 7)]
+    posti = forms.ChoiceField(label="Posti",choices=elencoPosti)
+
+class FormPrenota(forms.Form):
+
+    #recupero l'elenco delle citta dagli hotel
+    utente=forms.EmailField(label="Email")
+    dataArrivo = forms.DateField(label="Arrivo",widget=forms.SelectDateWidget())
+    #input data partenza
+    dataPartenza = forms.DateField(label="Partenza",widget=forms.SelectDateWidget())
+    # TODO: Aggiungere Camera

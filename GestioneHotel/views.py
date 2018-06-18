@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from GestioneHotel.models import *
 from GestioneHotel.forms import *
 from django.shortcuts import render
+from django.utils import timezone
 
 # Create your views here.
 #Hotel: viste legate alla classe Hotel
@@ -122,3 +123,42 @@ def prenotazionePerAlbergatore(request, albergatoreID):
 #Camera
 def disponibilita(request, cameraID, dal, al):
     pass
+
+def Main(request):
+    if request.method == "POST":
+        # Da Main se clic su cerca...
+        formRicerca = FormRicerca(request.POST)
+        #se il form è correttamente compilato...
+        if formRicerca.is_valid():
+            citta=formRicerca.cleaned_data['citta']
+            dataArrivo=formRicerca.cleaned_data['dataArrivo']
+            dataPartenza = formRicerca.cleaned_data['dataPartenza']
+            posti = formRicerca.cleaned_data['posti']
+            # recupero le camere libere
+            camere=(Camera.objects.exclude(id__in=Prenotazione.objects.filter(checkin__lte=dataArrivo,checkout__gt=dataArrivo\
+                    )).exclude(id__in=Prenotazione.objects.filter(checkin__lt=dataPartenza,checkout__gte=dataPartenza\
+                    )).exclude(id__in=Prenotazione.objects.filter(checkin__gte=dataArrivo, checkout__lte=dataPartenza))).filter(postiLetto=posti).filter(hotel=Hotel.objects.filter(citta=citta))
+
+            if len(camere)==0:
+                # se nessuna Camera è stata trovata...
+                noresult=True
+                # riporta a Main.html con un flag per la visualizzazione di un messaggio
+                return render(request, "Main.html", {'form': formRicerca,'noresult':noresult})
+            else:
+                # se almeno una camera è stata trovata
+                servizi=Servizio.objects.all()
+                serviziDisponibili=ServiziDisponibili.objects.all()
+                return render(request,"ListaCamereDisponibili.html",{'camere':camere,'serviziDisponibili':serviziDisponibili,'servizi':servizi,'dataArrivo':dataArrivo,'dataPartenza':dataPartenza})
+    else:
+        return render(request, "Main.html", {'form': FormRicerca})
+
+def ListaCamereDisponibili(request):
+    return render(request, "ListaCamereDisponibili.html")
+
+def Prenota(request):
+    if request.method == "POST":
+        # Registare la prenotazione
+        formPrenota = FormPrenota(request.POST)
+        return render(request, "Prenota.html", {"dataArrivo": request, "dataPartenza": request, "camera": request})
+    else:
+        return render(request, "Prenota.html", {"dataArrivo": request, "dataPartenza": request, "camera":request})

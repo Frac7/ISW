@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author">
+    <meta name="keywords" content="the reception reseption booking hotel prenota">
+    <link rel="stylesheet" href="{% static 'Style.css' %}">
+    <title>Lista Camere Disponibili</title>
+</head>
+<body>
+
+    <div id="divRicerca">
+        <table>
+            <tr>
+                <th> Nome Hotel </th>
+                <th> Camera Nr. </th>
+                <th> Posti letto </th>
+                <th> Servizi </th>
+                <th> Prenota </th>
+            </tr>
+
+            {% for camera in camere %}
+
+
+                <tr>
+                    <td> {{ camera.hotel.nome }}</td>
+                    <td> {{ camera.numero }} </td>
+                    <td> {{ camera.postiLetto }} </td>
+
+                    <td> {% for servizio in serviziDisponibili %}
+                            {% if servizio.camera == camera %}
+                               {% for serv in servizi %}
+                                   {% if serv == servizio.servizio %}
+                                       {{ serv.nome }}
+                                   {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td><a href="Prenota.html">Prenota </a></td>
+                </tr>
+
+
+            {% endfor %}
+        </table>
+    </div>
+
+    <div> Legenda: </div>
+    <div>
+    {% for serv in servizi %}
+        <div>
+            {{ serv }}
+        </div>
+    {% endfor %}
+    </div>
+</body>
+</html>

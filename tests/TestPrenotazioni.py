@@ -21,9 +21,9 @@ class TestPrenotazioni(TestCase):
         hotel.save()
 
         # Creazione hotel (hotel, numero, postiletto)
-        camera=Camera(hotel=hotel,numero=303,postiLetto=3)
+        self.camera=Camera(hotel=hotel,numero=303,postiLetto=3)
         # Salvataggio nel db temporaneo
-        camera.save()
+        self.camera.save()
 
         # Creazione servizio1 (nome, descrizioneservizio)
         tv=Servizio(nome="TV",descrizioneServizio="Satellitare")
@@ -35,21 +35,27 @@ class TestPrenotazioni(TestCase):
         fb.save()
 
         #Creazione servizio tv disponibile per la camera (camera,servizio)
-        serviziotv=ServiziDisponibili(camera=camera,servizio=tv)
+        serviziotv=ServiziDisponibili(camera=self.camera,servizio=tv)
         # Salvataggio nel db temporaneo
         serviziotv.save()
         # Creazione servizio frigo bar disponibile per la camera (camera,servizio)
-        serviziofb = ServiziDisponibili(camera=camera, servizio=fb)
+        serviziofb = ServiziDisponibili(camera=self.camera, servizio=fb)
         # Salvataggio nel db temporaneo
         serviziofb.save()
 
         # Creazione prenotazione della camera (camera, utente,checkin,checkout)
-        prenotazione=Prenotazione(camera=camera,utente="email@dominio",checkin=datetime.now(),checkout=datetime.now())
+        self.prenotazione=Prenotazione(camera=self.camera,utente="email@dominio",checkin=datetime.now(),checkout=datetime.now())
         # Salvataggio nel db temporaneo
-        prenotazione.save()
+        self.prenotazione.save()
 
     def testPrenotazione(self):
+        # Controlla che la prenotazione sia stata inserita
         self.assertEqual(len(Prenotazione.objects.all()), 1)
+        prenotazione = Prenotazione.objects.all().get(id=self.prenotazione.id)
+        # Controlla che l'utente della prenotazione sia quello corretto
+        self.assertEqual(prenotazione.utente,"email@dominio")
+        #Controlla che la camera della prenotazione sia quella corretta
+        self.assertEqual(prenotazione.camera, self.camera)
 
 if __name__ == "__main__":
     unittest.main()
