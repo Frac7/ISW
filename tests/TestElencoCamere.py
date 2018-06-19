@@ -54,17 +54,18 @@ class TestElencoCamere(TestCase):
         for servizio in self.camera1.servizi:
             self.assertContains(response, servizio.nome)
             self.assertContains(response, servizio.descrizioneServizio)
-        for hotel in self.camera1.hotel:
+            hotel = self.camera1.hotel
+        #for hotel in self.camera1.hotel: #non iterabile
             self.assertContains(response, hotel.nome)
             self.assertContains(response, hotel.citta)
-            for hotel.indirizzo in self.camera1.hotel.indirizzo:
-                self.assertContains(response, self.hotel.indirizzo.via)
-                self.assertContains(response, self.hotel.indirizzo.numero)
+            #for hotel.indirizzo in self.camera1.hotel.indirizzo: #non iterabile
+            self.assertContains(response, hotel.indirizzo.via)
+            self.assertContains(response, hotel.indirizzo.numero)
             # NON SO SE IL FOR SOTTO SERVE, E SE SI, LI' E' DA FARE "CONTAINS" o "EQUAL"
-            # PER CONTROLLARE IL PROPRIETARIO CON IL LOGIN
-            for hotel.albergatore in self.camera1.hotel.proprietario:
-                self.assertContains(response, self.hotel.albergatore.nome)
-                self.assertContains(response, self.hotel.albergatore.cognome)
+            # PER CONTROLLARE IL PROPRIETARIO CON IL LOGIN (per questo c'e' il metodo autorizza accesso, comunque hai gia' fatto il login sopra con la POST)
+            #for hotel.albergatore in self.camera1.hotel.proprietario: #non iterabile
+                #self.assertContains(response, self.hotel.albergatore.nome)
+                #self.assertContains(response, self.hotel.albergatore.cognome)
 
 if __name__ == "__main__":
         unittest.main()

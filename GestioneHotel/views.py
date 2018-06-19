@@ -28,7 +28,7 @@ def listaCamere(request, hotelID):
         servizi = {}
         aggiungiCameraForm = None
     #Qui ci sono ancora le pagine html statiche da rendere dinamiche
-    return render(request, "InfoHotelAggiungiCamera_provaDinamica.html", {
+    return render(request, "InfoHotelAggiungiCamera.html", {
                       "hotel": hotel,
                       "camere": lista, #lista delle camere da scorrere in html
                         "servizi": servizi,
