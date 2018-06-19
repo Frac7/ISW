@@ -9,15 +9,37 @@ from django.utils import timezone
 
 # Create your views here.
 #Hotel: viste legate alla classe Hotel
-@login_required(login_url='/Login.html') #è da provare
+@login_required(login_url='/Login') #è da provare
 #dettagli hotel e lista camere
-def listaCamere(request, hotelID):
+def dettaglioHotel(request, hotelID):
     try:
         hotel = Hotel.objects.get(id=hotelID)
     except Hotel.DoesNotExist:
         hotel = None
     #Date tutte le camere registrare nel db, prende quelle presenti in hotel
     if hotel != None:
+        # Collegato al form aggiungi camera
+        if request.method == "POST":  # Useremo sempre la post per i form
+            # Per i click su camera o hotel si può usare la get in modo da recuperare i parametri e poter usare query strings
+            aggiungiCameraForm = AggiungiCameraForm(request.POST)
+            # Recupera il form e controlla che sia valido, se sì crea una camera
+            if aggiungiCameraForm.is_valid():
+                listaServizi = []
+                if aggiungiCameraForm.cleaned_data['servizio1']:
+                    listaServizi.append(Servizio.objects.all().get(nome="TV"))
+                if aggiungiCameraForm.cleaned_data['servizio2']:
+                    listaServizi.append(Servizio.objects.all().get(nome="AC"))
+                if aggiungiCameraForm.cleaned_data['servizio3']:
+                    listaServizi.append(Servizio.objects.all().get(nome="FB"))
+                #Servizi esistenti recuperati da checkbox
+                nuovaCamera = Camera(id=(len(Camera.objects.all())+1),numero=aggiungiCameraForm.cleaned_data['numero'],
+                                     postiLetto=aggiungiCameraForm.cleaned_data['postiLetto'],
+                                     hotel=hotel)
+                nuovaCamera.save()
+                for servizio in listaServizi:
+                    nuovoServizioDisponibile = ServiziDisponibili(camera=nuovaCamera, servizio=servizio)
+                    nuovoServizioDisponibile.save()
+                # Salvataggio camera nel db
         lista = hotel.listaCamere()
         servizi = {} #Dizionario: key = id camera, value = servizio (ottenuto filtrando prima i servizi per camera e poi i servizi per id)
         for camera in lista:
@@ -34,27 +56,6 @@ def listaCamere(request, hotelID):
                         "servizi": servizi,
         "form": aggiungiCameraForm
                   })
-#Collegato al form aggiungi camera
-@login_required(login_url='/Login.html') #è da provare
-def aggiungiCamera(request, hotelID):
-    #Cliccando su un hotel non si dovrebbe avere questo problema, ma non si sa mai
-    try:
-        hotel = Hotel.objects.get(id=hotelID)
-    except Hotel.DoesNotExist:
-        hotel = None
-    if request.method == "POST": #Useremo sempre la post per i form
-        #Per i click su camera o hotel si può usare la get in modo da recuperare i parametri e poter usare query strings
-        aggiungiCameraForm = AggiungiCameraForm(request.POST)
-        #Recupera il form e controlla che sia valido, se sì crea una camera
-        if aggiungiCameraForm.is_valid():
-            nuovaCamera = Camera(numero=aggiungiCameraForm.cleaned_data['numeroCamera'],
-                           postiLetto=aggiungiCameraForm.cleaned_data['postiLettoCamera'],
-                                 hotel=hotel)
-            #TODO: associazione id camera e servizi (n a m)
-            nuovaCamera.save()
-            #Salvataggio camera nel db
-    return HttpResponseRedirect("InfoHotelAggiungiCamera/" + hotelID + "/")
-
 #Albergatore
 def aggiungiAlbergatore(request):
     if request.method== "POST":

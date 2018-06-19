@@ -6,26 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author">
     <meta name="keywords" content="the reception reseption booking hotel prenota">
-    <link rel="stylesheet" type="text/css" href="../static/Style.css" media="screen">
-    <!--link rel="stylesheet" href="{% static 'Style.css' %}"-->
+    <link rel="stylesheet" href="{% static 'Style.css' %}">
     <title>The Reception</title>
 </head>
 <body>
     <header>
         <div id="intestazione">
-            <img id="logo" src="../static/img//LogoBooking.png" alt="Logo" width="100" height="100">
+            <img id="logo" src="{% static '/img/LogoBooking.png' %}" alt="Logo" width="100" height="100">
             <h1 id="intLogo"> The Reception.com</h1>
         </div>
         <div id="userForm">
             <nav>
                 <div id="userLogin">
-                    <button id="btnRegistrati" type="button" value="registrati" onclick="top.location.href='Registrazione.html'">  <b> Registrati </b> </button>
-                    <button id="btnAccedi" type="button" value="accedi" onclick="top.location.href='Login.html'">  <b> Accedi </b> </button>
+                    <button id="btnRegistrati" type="button" value="registrati" onclick="top.location.href='/Registrazione'">  <b> Registrati </b> </button>
+                    <button id="btnAccedi" type="button" value="accedi" onclick="top.location.href='/Login'">  <b> Accedi </b> </button>
                 </div>
-                <div id="userImpostazioni">
+                <!--<div id="userImpostazioni">
                     <a id="userImpostazioniC" href="Cookies.html">  Cookies </a>
                     <a id="userImpostazioniA" href="Assistenza.html"> Assistenza </a>
-                </div>
+                </div>-->
 
             </nav>
         </div>
@@ -41,26 +40,14 @@
             {% if noresult == True %}
                 Nessuna Camera Trovata
             {% endif %}
-            <!--
-            <label for="dove?"> </label>
-            <input id="doveVai" type="search" placeholder="Dove vuoi andare?" name="dove?" required>
 
-            <label for="dataA?"> </label>
-            Data Arrivo <input id="dataArrivo" type="date" name="dataA?" required>
-
-            <label for="dataP?"> </label>
-            Data Partenza <input id="dataPartenza" type="date" name="dataP?" required>
-
-            <label for="numeroPosti?"> </label>
-            Numero di persone<input id="quantiSiete" type="number" min="1" name="numeroPosti?" required>
-            -->
             <button id="btnCerca" type="submit"> <b> Cerca</b> </button>
         </form>
 
     </div>
     <div id="divRisultatoRicerca">
         RISULTATI RICERCA QUI
-        <p> (TODO::da decidere dove andrà) Dopo la selezione dell'hotel, la persona dovrà inserire i propri dati:</p>
+        <p> <!--(TODO::da decidere dove andrà) Dopo la selezione dell'hotel, la persona dovrà inserire i propri dati:--></p>
         <form>
             <label for="email"><b>Email</b></label> <br>
             <input type="text"  name="email" required> <br>
@@ -70,19 +57,19 @@
     </div>
     <div id="divSuggerimenti">
         <div id="postoConsUno">
-            <img id="postoUno" src="../static/img//hong-kong.png" alt="Posto Consigliato">
+            <img id="postoUno" src="{% static 'img/hong-kong.png' %}" alt="Posto Consigliato">
         </div>
         <div id="postoConsDue">
-            <img id="postoDue" src="../static/img//las-vegas.png" alt="Posto Consigliato">
+            <img id="postoDue" src="{% static 'img/las-vegas.png' %}" alt="Posto Consigliato">
         </div>
         <div id="postoConsTre">
-            <img id="postoTre" src="../static/img//tokyo.png" alt="Posto Consigliato">
+            <img id="postoTre" src="{% static 'img/tokyo.png' %}" alt="Posto Consigliato">
         </div>
         <div id="postoConsQuattro">
-            <img id="postoQuattro" src="../static/img//warsaw.png" alt="Posto Consigliato">
+            <img id="postoQuattro" src="{% static 'img/warsaw.png' %}" alt="Posto Consigliato">
         </div>
         <div id="postoConsCinque">
-            <img id="postoCinque" src="../static/img//moscow.png" alt="Posto Consigliato">
+            <img id="postoCinque" src="{% static 'img/moscow.png' %}" alt="Posto Consigliato">
         </div>
     </div>
 

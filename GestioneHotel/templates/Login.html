@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author">
     <meta name="keywords" content="the reception reseption booking hotel prenota">
-    <link rel="stylesheet" type="text/css" href="../static/Style.css" media="screen">
+    <link rel="stylesheet" href="{% static 'Style.css' %}">
     <title> Login </title>
 </head>
 <body>
     <header>
         <div id="intestazione">
-            <img id="logo" src="../static/img//LogoBooking.png" alt="Logo" width="100" height="100">
+            <img id="logo" src="{% static '/img/LogoBooking.png' %}" alt="Logo" width="100" height="100">
             <h1 id="intLogo"> The Reception.com</h1>
         </div>
     </header>
@@ -29,13 +30,13 @@
             <input type="password" placeholder="Inserire la Password" name="psw" required> <br>
 
             <button type="submit">Login</button> <br>
-            <label>
+            <!--<label>
                 <input type="checkbox" checked="checked" name="remember"> Remember me
-            </label>
+            </label>-->
         </div>
         <hr>
         <div id="ritorno">
-            <button type="button" onclick="top.location.href='Main.html'" > Annulla</button>
+            <button type="button" onclick="top.location.href='/'" > Annulla</button>
             <span class="psw"> Non hai ancora un <a  id="nonHaiAccount"  href="http://localhost:63342/Progetto/GestioneHotel/templates/Registrazione.html"> account?</a></span>
         </div>
     </form>

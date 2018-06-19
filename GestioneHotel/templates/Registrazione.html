@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,17 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author">
     <meta name="keywords" content="the reception reseption booking hotel prenota">
-    <link rel="stylesheet" type="text/css" href="../static/Style.css" media="screen">
+    <link rel="stylesheet" href="{% static 'Style.css' %}">
     <title> Registrati </title>
 </head>
 <body>
     <header>
         <div id="intestazione">
-            <img id="logo" src="../static/img//LogoBooking.png" alt="Logo" width="100" height="100">
+            <img id="logo" src="{% static '/img/LogoBooking.png' %}" alt="Logo" width="100" height="100">
             <h1 id="intLogo"> The Reception.com</h1>
         </div>
         <div id="userLogin">
-            <button id="btnAccediInRegistrazione" type="button" value="accedi" onclick="top.location.href='Login.html'"> <b> Hai già un account? </b> </button>
+            <button id="btnAccediInRegistrazione" type="button" value="accedi" onclick="top.location.href='/Login'"> <b> Hai già un account? </b> </button>
         </div>
     </header>
     <form>
@@ -27,23 +28,12 @@
 
                 <div id="campiPerRegistrazione">
 
-                    <label for="nome"><b>Nome</b></label> <br>
-                    <input type="text"  name="name" required> <br>
-
-                    <label for="cognome"><b>Email</b></label> <br>
-                    <input type="text"  name="surname" required> <br>
-
-                    <label for="email"><b>Email</b></label> <br>
-                    <input type="text"  name="email" required> <br>
-
-                    <label for="password"><b>Password</b></label> <br>
-                    <input type="password"  name="psw" required> <br>
-
-                </div>
                 {% csrf_token %}
             {{ form }}
+
+                </div>
                 <div id="tastiRegistrazione" class="clearfix">
-                    <button type="button" onclick="top.location.href='Main.html'" > Annulla</button>
+                    <button type="button" onclick="top.location.href='/'" > Annulla</button>
                     <button type="submit" class="signupbtn"> Registrati</button>
                 </div>
             </form>

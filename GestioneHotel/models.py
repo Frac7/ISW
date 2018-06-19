@@ -1,4 +1,3 @@
-#TODO: getters
 from django.db import models
 import django
 from django.utils import timezone
@@ -8,6 +7,7 @@ class Albergatore(models.Model):
     cognome = models.CharField(max_length=50,default="")
     email = models.EmailField(max_length=50,default="")
     password = models.CharField(max_length=32,default="")
+
     @staticmethod
     def autorizzaAccesso(email, password):
         for albergatore in Albergatore.objects.all():
@@ -25,7 +25,7 @@ class Albergatore(models.Model):
     def prenotazioniPerAlbergatore(self):
         listaPrenotazioni=[]
         for prenotazione in Prenotazione.objects.all():
-            if prenotazione.camera.hotel.proprietario == self.id:
+            if prenotazione.camera.hotel.proprietario == self:
                 listaPrenotazioni.append(prenotazione)
         return listaPrenotazioni
 
@@ -54,31 +54,17 @@ class Hotel(models.Model):
     indirizzo = models.ForeignKey(Indirizzo)
     proprietario = models.ForeignKey(Albergatore)
 
-    def getNome(self):
-        return self.nome
-
-    def getDescrizione(self):
-        return self.descrizione
-
-    def getCitta(self):
-        return self.citta
-
-    def getIndirizzo(self):
-        return self.indirizzo
-
-    def getProprietario(self):
-        return self.proprietario
-
     def listaCamere(self):
         return Camera.objects.filter(hotel=self)
 
     def contaCamere(self):
-        count = 0
-        for camera in Camera.objects.all():
-            if camera.hotel.__eq__(self):
-                count += 1
-        return count
-    #TODO: aggiungi camera
+         # count = 0
+         # for camera in Camera.objects.all():
+         #     if camera.hotel.__eq__(self):
+         #         count += 1
+         # return count
+        return len(self.listaCamere())
+
     def __unicode__(self):
         return "%s, %s" % (self.nome, self.citta)
 

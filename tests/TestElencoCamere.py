@@ -34,6 +34,8 @@ class TestElencoCamere(TestCase):
         self.camera2.save()
         self.listaCamere.append(self.camera2)
 
+        ServiziDisponibili(camera=self.camera1,servizio=servizio).save()
+
     def testListaCamere(self):
         self.assertEqual(len(Camera.objects.all()), 2)
         #I parametri creati e salvati nel db temporaneao (le due camere, lista camera non viene salvato)
@@ -48,12 +50,12 @@ class TestElencoCamere(TestCase):
         response = self.client.get("/InfoHotelAggiungiCamera/" + self.hotel1.id.__str__() + "/", follow=True)
 
         # Si controlla che la risposta contenga i dati delle camere di un dato hotel posseduto dall'albergatore loggato
-        # NEL TEST, FAIL ALLA RIGA SUCCESSIVA A QUESTA --------------------------------------------------------------
         self.assertContains(response, self.camera1.numero)
         self.assertContains(response, self.camera1.postiLetto)
-        for servizio in self.camera1.servizi:
-            self.assertContains(response, servizio.nome)
-            self.assertContains(response, servizio.descrizioneServizio)
+        for servizi in self.camera1.listaServizi():
+            for servizio in servizi:
+                self.assertContains(response, servizio.nome)
+                self.assertContains(response, servizio.descrizioneServizio)
             hotel = self.camera1.hotel
         #for hotel in self.camera1.hotel: #non iterabile
             self.assertContains(response, hotel.nome)

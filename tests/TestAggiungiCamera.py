@@ -1,4 +1,3 @@
-#TODO: sostituire accesso ai parametri con getters
 #Test di accettazione per user story aggiungi camera
 from GestioneHotel.models import *
 from django.test import TestCase, Client
@@ -33,17 +32,7 @@ class TestAggiungiCamera(TestCase):
         tuttiGliAlbergatori = Albergatore.objects.all()
         self.assertEqual(self.albergatore.email, tuttiGliAlbergatori.get(id=self.albergatore.id).email)
         self.assertEqual(self.albergatore.password, tuttiGliAlbergatori.get(id=self.albergatore.id).password)
-        #TODO: inserire da qualche parte autorizza accesso; Test provvisorio
-        #TestLogin con Client
-        #client = Client()
-        #Si manda una richiesta post per il login con i dati
-        #response = client.post("/Login.html/", {"email": self.albergatore.email, "password": self.albergatore.password})
-        #La risposta deve essere 200 (e' andata a buon fine) - 302: redirection
-        #self.assertEqual(response.status_code, 200)
-        #Altre prove
-        #response = client.post("/Login.html/", {"email": self.albergatore.email, "password": "passwordDiversa"})
-        #Accesso negato
-        #self.assertNotEqual(response.status_code, 403)
+        Albergatore.autorizzaAccesso(self.albergatore.email, self.albergatore.password)
 
     #task aggiungi camera, requisito user story
     def testAggiungiCamera(self):
