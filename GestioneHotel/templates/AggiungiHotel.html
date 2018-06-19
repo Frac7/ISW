@@ -44,11 +44,10 @@
     <div id="divHotelAggiunti">
 
         <h1>I tuoi Hotel</h1>
-
         {% for hotel in listaHotel %}
-
-            <h2> {{ hotel.nome }}</h2>
-
+            {%if hotel %}
+                <h3>{{ hotel }}</h3>
+            {% endif %}
         {% endfor %}
     </div>
 </body>

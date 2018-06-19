@@ -96,10 +96,14 @@ def listaHotel(request, albergatoreID):
         albergatore = Albergatore.objects.get(id=albergatoreID)
     except Albergatore.DoesNotExist:
         albergatore = None
-    listaHotel = []
+
+    listaHotel = [[],[]]
+
     for hotel in Hotel.objects.all():
         if hotel.proprietario.__eq__(albergatore):
             listaHotel.append(hotel)
+            listaHotel.append(hotel.contaCamere())
+
     return render(request,
                     "AggiungiHotel.html",{
                     'listaHotel' : listaHotel,
