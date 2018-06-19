@@ -20,16 +20,15 @@ def dettaglioHotel(request, hotelID):
     if hotel != None:
         # Collegato al form aggiungi camera
         if request.method == "POST":  # Useremo sempre la post per i form
-            # Per i click su camera o hotel si può usare la get in modo da recuperare i parametri e poter usare query strings
             aggiungiCameraForm = AggiungiCameraForm(request.POST)
             # Recupera il form e controlla che sia valido, se sì crea una camera
             if aggiungiCameraForm.is_valid():
                 listaServizi = []
-                if aggiungiCameraForm.cleaned_data['servizio1']:
+                if aggiungiCameraForm.cleaned_data['servizio1'] == True:
                     listaServizi.append(Servizio.objects.all().get(nome="TV"))
-                if aggiungiCameraForm.cleaned_data['servizio2']:
+                if aggiungiCameraForm.cleaned_data['servizio2'] == True:
                     listaServizi.append(Servizio.objects.all().get(nome="AC"))
-                if aggiungiCameraForm.cleaned_data['servizio3']:
+                if aggiungiCameraForm.cleaned_data['servizio3'] == True:
                     listaServizi.append(Servizio.objects.all().get(nome="FB"))
                 #Servizi esistenti recuperati da checkbox
                 nuovaCamera = Camera(id=(len(Camera.objects.all())+1),numero=aggiungiCameraForm.cleaned_data['numero'],

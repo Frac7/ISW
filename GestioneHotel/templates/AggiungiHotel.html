@@ -21,8 +21,8 @@
                      <button id="btnLogout" type="button" value="esci" onclick="top.location.href='/'" > Logout </button>
                 </div>
                 <div id="userImpostazioni">
-                    <a href="Home.html"> Prenotazioni</a>
-                    <a href="AggiungiHotel.html"> Lista Hotel </a>
+                    <a id="userImpostazioniH" href="/Home/{{ albergatoreID }}"> Prenotazioni</a>
+                    <a id="userImpostazioniAdd" href=""> Lista Hotel </a> <!--TODO: passare a render l'ID albergatore-->
                 </div>
 
             </nav>
