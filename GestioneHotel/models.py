@@ -88,19 +88,28 @@ class Camera(models.Model):
     postiLetto = models.IntegerField(default=1)
     servizi = models.ManyToManyField(Servizio, through="ServiziDisponibili",through_fields=("camera","servizio"))
     hotel = models.ForeignKey(Hotel)
-
-    def disponibilitaCamera(self, da, a):
-        pass
-
-    def listaServizi(self): #restituisce la lista di servizi per la camera
+    def getNumero(self):
+        return self.numero
+    def getPostiLetto(self):
+        return self.postiLetto
+    def listaServizi(self):  # restituisce la lista di servizi per la camera
         serviziPerCamera = []
         for servizioDisponibile in ServiziDisponibili.objects.filter(camera=self.id):
             serviziPerCamera.append(Servizio.objects.filter(id=servizioDisponibile.servizio.id))
         return serviziPerCamera
-
+    def getHotel(self):
+        return self.hotel
+    def disponibilitaCamera(self, da, a, false=None, true=None):
+        # dovrei controllare la lista delle prenotazioni che hanno come camera, questa, e vedere se quest'ultima
+        # e' libera in quel lasso di tempo - GIUSTO?
+        # perche' altrimenti non capisco questa funzione => Date due prenotazioni questa funzione avrebbe da restituire
+        # le date libere pre-prenotazioni, post-prenotazioni e in mezzo se non sono consecutive
+        if self.da > Prenotazione(camera=self.id).checkout and self.a > Prenotazione(camera=self.id).checkout or self.da < Prenotazione(camera=self.id).checkin and self.a < Prenotazione(camera=self.id).checkin:
+            return true
+        else:
+            return false
     def __unicode__(self):
         return "%s, %s" % (self.numero, self.hotel)
-
 
 class ServiziDisponibili(models.Model):
     camera=models.ForeignKey(Camera)
