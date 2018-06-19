@@ -70,7 +70,7 @@ class TestListaPrenotazioni(TestCase):
         self.assertTrue(response)
         response = self.client.get("/Home/" + self.albergatore.id.__str__() + "/", follow=True)
 
-        # Si controlla che la risposta contenga i dati degli delle prenotazioni, fatte agli hotel dell'albergatore loggatopy
+        # Si controlla che la risposta contenga i dati degli delle prenotazioni, fatte agli hotel dell'albergatore loggato
         self.assertContains(response, self.prenotazione1.utente)
         #il template specifica solo numero e hotel
         self.assertContains(response, self.prenotazione1.camera.numero)
