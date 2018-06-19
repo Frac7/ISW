@@ -138,9 +138,7 @@ a:active {
 }
 
 #divSuggerimenti {
-    border-style: solid;
-    border-color: #5E92D4;
-    margin-top: 20px;
+    margin-top: 20px
 }
 
 #btnCerca{
@@ -152,9 +150,32 @@ a:active {
     border-radius: 2px;
     background-color: #5E92D4;
     color: #E2E6EB;
-
 }
 
+#postoUno, #postoDue{
+    float: left;
+    height: 15%;
+    width: 49.6%;
+}
+
+#postoDue{
+    margin-left: 10px;
+}
+
+#postoTre, #postoQuattro, #postoCinque{
+    float: left;
+    height: 300px;
+    width: 32.8%;
+    margin-top: 10px;
+}
+
+#postoQuattro, #postoCinque{
+    margin-left: 10px;
+}
+
+h6{
+    text-align: center;
+}
 /**********************************************************************************************************************/
 /* CSS Home */
 #userImpostazioniAdd{

@@ -10,50 +10,47 @@ class TestListaPrenotazioni(TestCase):
         # Creazione albergatore (nome, cognome, email, password
         email = "user@email.com"
         password = "password"
-        albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
-        albergatore.save()
+        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
+        self.albergatore.save()
 
         # Creazione indirizzi per gli hotel
         indirizzo1 = Indirizzo(via='Via Trieste', numero='14')
         indirizzo1.save()
 
         # creazione degli Hotel e poi aggiunta alla lista
-        hotel1 = Hotel(nome='Gold Hotel', descrizione='L\'Hotel piu\' adatto per la vostra permanenza e riposo.', citta='Cagliari', indirizzo=indirizzo1, proprietario=albergatore)
-        hotel1.save()
+        self.hotel1 = Hotel(nome='Gold Hotel', descrizione='L\'Hotel piu\' adatto per la vostra permanenza e riposo.', citta='Cagliari', indirizzo=indirizzo1, proprietario=self.albergatore)
+        self.hotel1.save()
 
         #Creazione servizi per i servizi disponibili
         servizio = Servizio(nome="TV", descrizioneServizio="televisione")
         servizio.save()
 
         #Creazione delle camere che verranno mostrate nella lista delle prenotazioni in corso (che verranno mostrate nella lista all'albergatore)
-        camera1 = Camera(numero=1, postiLetto=4, hotel=hotel1)
-        camera1.save()
-        camera2 = Camera(numero=2, postiLetto=3, hotel=hotel1)
-        camera2.save()
+        self.camera1 = Camera(numero=1, postiLetto=4, hotel=self.hotel1)
+        self.camera1.save()
+        self.camera2 = Camera(numero=2, postiLetto=3, hotel=self.hotel1)
+        self.camera2.save()
 
         #Lego i servizi alle camere
-        servizioTv = ServiziDisponibili(camera=camera1, servizio=servizio)
+        servizioTv = ServiziDisponibili(camera=self.camera1, servizio=servizio)
         servizioTv.save()
-        servizioTv = ServiziDisponibili(camera=camera1, servizio=servizio)
+        servizioTv = ServiziDisponibili(camera=self.camera1, servizio=servizio)
         servizioTv.save()
 
         #Creazione lista delle prenotazioni che saranno visibili all'Albergatore in prima pagina, come si logga
-        listaPrenotazioni = []
+        self.listaPrenotazioni = []
 
 
         #Creazione e aggiunta delle prenotazioni alla lista che verra mostrata all'Albergatore
-        prenotazione1 = Prenotazione(utente='utenteNonRegistrato1@gmail.it', camera=camera1, checkin=date(2012, 3, 15),
+        self.prenotazione1 = Prenotazione(utente='utenteNonRegistrato1@gmail.it', camera=self.camera1, checkin=date(2012, 3, 15),
                                      checkout=date(2011, 8, 30))
-        prenotazione1.save()
-        listaPrenotazioni.append(prenotazione1)
-        prenotazione2 = Prenotazione(utente='ntenteNonRegistrato2@gmail.it', camera=camera2, checkin=date(2012, 3, 8),
+        self.prenotazione1.save()
+        self.listaPrenotazioni.append(self.prenotazione1)
+        self.prenotazione2 = Prenotazione(utente='ntenteNonRegistrato2@gmail.it', camera=self.camera2, checkin=date(2012, 3, 8),
                                      checkout=date(2011, 8, 30))
-        prenotazione2.save()
-        listaPrenotazioni.append(prenotazione2)
+        self.prenotazione2.save()
+        self.listaPrenotazioni.append(self.prenotazione2)
 
-        #Controlla presenza prenotazioni nella lista
-        assert listaPrenotazioni[0] == prenotazione1
-        assert listaPrenotazioni[1] == prenotazione2
 
         #assert autorizzaAccesso(albergatore.getEmail(), albergatore.getPassword())
 
@@ -63,6 +60,26 @@ class TestListaPrenotazioni(TestCase):
 
     def testListaPrenotazioni(self):
         self.assertEqual(len(Prenotazione.objects.all()), 2)
+        self.assertEqual(self.listaPrenotazioni[0], self.prenotazione1, "Prenotazione 1 non e' presente nella lista")
+        self.assertEqual(self.listaPrenotazioni[1], self.prenotazione2, "Prenotazione 2 non e' presente nella lista")
+
+    def testViewListaPrenotazioni(self):
+        # Per visualizzare la lista camere e' necessario loggarsi, si manda una richiesta POST con i dati
+        response = self.client.post("/Login.html/", {"email": self.albergatore.email, "password": self.albergatore.password})
+        self.assertTrue(response)
+        response = self.client.get("/Home/" + self.albergatore.id.__str__() + "/", follow=True)
+
+        # Si controlla che la risposta contenga i dati degli delle prenotazioni, fatte agli hotel dell'albergatore loggato
+        # NEL TEST, FAIL ALLA RIGA SUCCESSIVA A QUESTA --------------------------------------------------------------
+        self.assertContains(response, self.prenotazione1.utente)
+        self.assertContains(response, self.prenotazione1.camera)
+        self.assertContains(response, self.prenotazione1.checkin)
+        self.assertContains(response, self.prenotazione1.checkout)
+
+        self.assertContains(response, self.prenotazione2.utente)
+        self.assertContains(response, self.prenotazione2.camera)
+        self.assertContains(response, self.prenotazione2.checkin)
+        self.assertContains(response, self.prenotazione2.checkout)
 
 if __name__ == "__main__":
     unittest.main()
