@@ -19,7 +19,7 @@
         }
 	}
 </script>
-    <title> Hotel </title>
+    <title> Hotel {{ hotel.nome }}</title>
 </head>
 <body>
     <header>
@@ -30,7 +30,7 @@
         <div id="userForm">
             <nav>
                 <div id="userLogin">
-                    <button id="btnLogout" type="button" value="esci" onclick="top.location.href='/'"> <b> Logout</b></button>
+                    <button id="btnLogout" type="button" value="esci" onclick="top.location.href='/Logout'"> <b> Logout</b></button>
                 </div>
                 <div id="userImpostazioni">
                     <a id="userImpostazioniH" href="/Home/{{ hotel.proprietario.id }}"> Prenotazioni</a>
@@ -54,7 +54,6 @@
          <form method="post">
              {% csrf_token %}
                 {{ form.as_p }}
-             <!--TODO: modificare il css in modo che il form generato abbia lo stile desiderato, vedere da forms.py gli attributi per i selettori CSS-->
              <button type="submit" value="Aggiungi"> Aggiungi</button>
         </form>
     </div>
