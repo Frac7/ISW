@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^ListaCamereDisponibili/', views.ListaCamereDisponibili),
     url(r'^Prenota/(?P<nomeHotel>\D+)/(?P<numeroCamera>[\w-]+)/(?P<postiLetto>\d+)/(?P<idCamera>\d+)/(?P<arrivo>[\w-]+)/(?P<partenza>[\w-]+)/', views.Prenota),
     url(r'PrenotazioneEffettuata/', views.PrenotazioneEffettuata),
-    #url(r'^Registrazione/', view da creare),
+    url(r'^signup/', views.signup),
     url(r'^Login/', views.login),
     url(r'Logout/', views.logout),
 ]

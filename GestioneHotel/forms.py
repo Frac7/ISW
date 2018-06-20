@@ -1,6 +1,21 @@
 from django import forms
 from GestioneHotel.models import *
 
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+
+# Collegato alla view signup
+class SignUpForm(UserCreationForm):
+    username = forms.EmailField(label="Email", max_length=254, help_text='Obbligatorio. inserire un indirizzo email valido.')
+    nome = forms.CharField(max_length=50, help_text='Obbligatorio.')
+    cognome = forms.CharField(max_length=50, help_text='Obbligatorio.')
+
+    class Meta:
+        model = User
+        fields = ('username', 'nome', 'cognome', 'password1', 'password2', )
+
+
 #Collegato alla view aggiungiCamera
 class AggiungiCameraForm(forms.Form):
     numero = forms.CharField(label="Numero",max_length=15,required=True,widget=forms.TextInput(attrs={'id': 'campoCamera'}))
@@ -36,6 +51,10 @@ class FormRicerca(forms.Form):
 
     #recupero l'elenco delle citta dagli hotel
     elencoCitta = [(hotel.citta, hotel.citta) for hotel in Hotel.objects.order_by('citta')]
+    # elimino i duplicati dalla lista
+    elencoCitta = list(set(elencoCitta))
+    #ordino la lista
+    elencoCitta.sort()
     # html select della citta dell'elenco delle citta disponibili
     citta=forms.ChoiceField(label="Destinazione", widget=forms.Select(attrs={'id':'ricercaCitta'}), choices=elencoCitta)
     # input data arrivo

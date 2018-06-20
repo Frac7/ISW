@@ -6,11 +6,39 @@ from GestioneHotel.forms import *
 from django.shortcuts import render, redirect
 import datetime
 
-# Create your views here.
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            nome = form.cleaned_data.get('nome')
+            cognome = form.cleaned_data.get('cognome')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            # Bisogna anche creare l'Albergatore
+            albergatore=Albergatore(nome=nome, cognome=cognome, email=username, password=raw_password)
+            albergatore.save()
+
+            return redirect('/Home/'+str(albergatore.id))
+    else:
+        form = SignUpForm()
+
+    return render(request, 'signup.html', {'form': form})
+
+
 #Login
 def logout(request):
     #TODO: django logout
     return redirect("/")
+
+
 def login(request):
     error = False
     if request.method == "POST":  # Useremo sempre la post per i form
@@ -31,6 +59,8 @@ def login(request):
         "form": loginForm,
         "error": error
     })
+
+
 #Hotel: viste legate alla classe Hotel
 @login_required(login_url='/Login') #è da provare
 #dettagli hotel e lista camere
@@ -150,16 +180,30 @@ def prenotazionePerAlbergatore(request, albergatoreID):
 def disponibilita(request, cameraID, dal, al):
     pass
 
+
 def Main(request):
     if request.method == "POST":
         # Da Main se clic su cerca...
         formRicerca = FormRicerca(request.POST)
+
         #se il form è correttamente compilato...
         if formRicerca.is_valid():
+
             citta=formRicerca.cleaned_data['citta']
             dataArrivo=formRicerca.cleaned_data['dataArrivo']
             dataPartenza = formRicerca.cleaned_data['dataPartenza']
             posti = formRicerca.cleaned_data['posti']
+
+            # Controllo che le date non siano precedenti alla data di oggi
+            if dataArrivo < datetime.date.today() or dataArrivo < datetime.date.today():
+                msg="Attenzione: le date di arrivo e di partenza non possono essere precedenti ad oggi"
+                return render(request, "Main.html", {'form': formRicerca, 'msg': msg})
+
+            # Controllo che la data di partenza sia successiva a quella di arrivo
+            if dataArrivo > dataPartenza:
+                msg="Attenzione: le date di partenza deve essere posteriore a quella di arrivo"
+                return render(request, "Main.html", {'form': formRicerca, 'msg': msg})
+
             # recupero le camere libere
             camere=(Camera.objects.exclude(id__in=Prenotazione.objects.filter(checkin__lte=dataArrivo,checkout__gt=dataArrivo\
                     )).exclude(id__in=Prenotazione.objects.filter(checkin__lt=dataPartenza,checkout__gte=dataPartenza\
@@ -167,9 +211,9 @@ def Main(request):
 
             if len(camere)==0:
                 # se nessuna Camera è stata trovata...
-                noresult=True
-                # riporta a Main.html con un flag per la visualizzazione di un messaggio
-                return render(request, "Main.html", {'form': formRicerca,'noresult':noresult})
+                msg="Nessuna Camera Trovata"
+                # riporta a Main.html con un messaggio per la visualizzazione di un messaggio
+                return render(request, "Main.html", {'form': formRicerca,'msg':msg})
             else:
                 # se almeno una camera è stata trovata
                 servizi=Servizio.objects.all()
@@ -177,6 +221,7 @@ def Main(request):
                 return render(request,"ListaCamereDisponibili.html",{'camere':camere,'serviziDisponibili':serviziDisponibili,'servizi':servizi,'dataArrivo':dataArrivo,'dataPartenza':dataPartenza})
     else:
         return render(request, "Main.html", {'form': FormRicerca})
+
 
 def ListaCamereDisponibili(request):
     return render(request, "ListaCamereDisponibili.html")

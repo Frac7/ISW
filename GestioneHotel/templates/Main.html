@@ -38,8 +38,8 @@
         <form action="ListaCamereDisponibili/" method="post">
         {% csrf_token %}
             {{ form }}
-            {% if noresult == True %}
-                Nessuna Camera Trovata
+            {% if msg %}
+                {{ msg }}
             {% endif %}
 
             <button id="btnCerca" type="submit"> <b> Cerca</b> </button>
