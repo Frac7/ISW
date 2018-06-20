@@ -7,6 +7,19 @@
     <meta name="author">
     <meta name="keywords" content="the reception reseption booking hotel prenota">
     <link rel="stylesheet" href="{% static 'Style.css' %}">
+    <script language="javascript">
+	function mostraNascondiDiv() {
+		if(document.getElementById("formAggiungiHotel").style.display === "block") {
+            document.getElementById("formAggiungiHotel").style.display = "none";
+            document.getElementById("btnAggiungiHotel").value = "Aggiungi Hotel ↓" ;
+        }
+		else {
+            document.getElementById("formAggiungiHotel").style.display = "block";
+            document.getElementById("btnAggiungiHotel").value = "Aggiungi Hotel ↑" ;
+        }
+	}
+	</script>
+
     <title> Aggiungi Hotel </title>
 </head>
 <body>
@@ -30,14 +43,13 @@
     </header>
 
     <div id="divTastoAggiungi">
-        <button id="btnAggiungiHotel" type="button" value="aggiungi"> Aggiungi Hotel </button>
-        <!--al click di questo deve aprirsi il form? -->
+        <input id="btnAggiungiHotel" type="button" value="Aggiungi Hotel ↓" onclick="mostraNascondiDiv()">
     </div>
-    <div id="formAggiungiHotel">
-         <form action="Aggiungi" method="post">
+    <div hidden id="formAggiungiHotel">
+         <form method="post">
              {% csrf_token %}
              <br>
-                {{ form }}
+                {{ form.as_p }}
              <br>
          <button type="submit" value="Aggiungi"> Aggiungi</button>
         </form>
@@ -45,11 +57,29 @@
     <div id="divHotelAggiunti">
 
         <h1>I tuoi Hotel</h1>
+        <table>
+            <tr>
+                <td><h2> Nome Hotel</h2></td>
+                <td><h2>Numero Camere</h2></td>
+            </tr>
         {% for hotel in listaHotel %}
-            {%if hotel %}
-                <h3>{{ hotel }}</h3>
+
+            {%if hotel.nome %}
+             <tr>
+                <th>
+                    <h3>    <a id="dettaglioHotel" href="/InfoHotelAggiungiCamera/{{hotel.id}}">{{ hotel.nome }}</a> </h3>
+                </th>
+            {%else%}
+                {% if hotel %}
+                    <th>
+                        <h3>{{hotel}}</h3>
+                    </th>
+                {% endif %}
+             </tr>
             {% endif %}
-        {% endfor %}
+
+            {% endfor %}
+        </table>
     </div>
 </body>
 </html>

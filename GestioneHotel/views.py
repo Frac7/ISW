@@ -72,34 +72,29 @@ def aggiungiAlbergatore(request):
         return render(request, "Registrazione.html", {"form" : registrazioneAlbergatore})
 
 
-def aggiungiHotel(request, albergatoreID):
-    try:
-        albergatore=Albergatore.objects.get(id=albergatoreID)
-    except Albergatore.DoesNotExist:
-        albergatore=None
-    if request.method=="POST":
-        aggiungiHotelForm=AggiungiHotelForm(request.POST)
-        if aggiungiHotelForm.is_valid():
-            nuovoIndirizzo=Indirizzo(via=aggiungiHotelForm.cleaned_data['via'],
-                                     numero=aggiungiHotelForm.cleaned_data['numero'])
-            nuovoIndirizzo.save()
-
-            nuovoHotel=Hotel(nome=aggiungiHotelForm.cleaned_data['nome'],
-                             descrizione=aggiungiHotelForm.cleaned_data['descrizione'],
-                             citta=aggiungiHotelForm.cleaned_data['citta'],
-                             indirizzo=nuovoIndirizzo,
-                             proprietario=albergatore)
-            nuovoHotel.save()
-    return HttpResponseRedirect("AggiungiHotel/" + albergatoreID + "/")
 
 def listaHotel(request, albergatoreID):
     try:
         albergatore = Albergatore.objects.get(id=albergatoreID)
     except Albergatore.DoesNotExist:
         albergatore = None
+    if request.method == "POST":
+        aggiungiHotelForm = AggiungiHotelForm(request.POST)
 
-    listaHotel = [[],[]]
+        if aggiungiHotelForm.is_valid():
+            nuovoIndirizzo = Indirizzo(via=aggiungiHotelForm.cleaned_data['via'],
+                                       numero=aggiungiHotelForm.cleaned_data['numeroCivico'])
+            nuovoIndirizzo.save()
 
+            nuovoHotel = Hotel(nome=aggiungiHotelForm.cleaned_data['nome'],
+                               descrizione=aggiungiHotelForm.cleaned_data['descrizione'],
+                               citta=aggiungiHotelForm.cleaned_data['citta'],
+                               indirizzo=nuovoIndirizzo,
+                               proprietario=albergatore)
+            nuovoHotel.save()
+
+    aggiungiHotelForm= AggiungiHotelForm()
+    listaHotel= []
     for hotel in Hotel.objects.all():
         if hotel.proprietario.__eq__(albergatore):
             listaHotel.append(hotel)
@@ -108,8 +103,9 @@ def listaHotel(request, albergatoreID):
     return render(request,
                     "AggiungiHotel.html",{
                     'listaHotel' : listaHotel,
-                    'form':AggiungiHotelForm
+                    'form':aggiungiHotelForm
                     })
+
 
 def prenotazionePerAlbergatore(request, albergatoreID):
     try:
