@@ -90,10 +90,15 @@ class Camera(models.Model):
         # e' libera in quel lasso di tempo - GIUSTO?
         # perche' altrimenti non capisco questa funzione => Date due prenotazioni questa funzione avrebbe da restituire
         # le date libere pre-prenotazioni, post-prenotazioni e in mezzo se non sono consecutive
-        if da > Prenotazione(camera=self.id).checkout and a > Prenotazione(camera=self.id).checkout or da < Prenotazione(camera=self.id).checkin and a < Prenotazione(camera=self.id).checkin:
-            return True
-        else:
-            return False
+        flag = True
+        listaPrenotazioniPerCamera = Prenotazione.objects.filter(camera=self)
+        for prenotazione in listaPrenotazioniPerCamera:
+            if da.year > prenotazione.checkout.year and a.year > Prenotazione(camera=self).checkout.year and da.month > prenotazione.checkout.month and a.month > prenotazione.checkout.month and da.day > prenotazione.checkout.day and a.day > prenotazione.checkout.day or da.year < prenotazione.checkin.year and a.year < prenotazione.checkin.year and da.month < prenotazione.checkin.month and a.month < prenotazione.checkin.month and da.day < prenotazione.checkin.day and a.day < prenotazione.checkin.day:
+                flag = True
+            else:
+                flag = False
+                return False
+        return True
     def __unicode__(self):
         return "%s, %s" % (self.numero, self.hotel)
 
