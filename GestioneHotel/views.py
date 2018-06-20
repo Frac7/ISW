@@ -1,14 +1,36 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals #Per lettere accentate...
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
-from GestioneHotel.models import *
+from django.http import HttpResponse
 from GestioneHotel.forms import *
-from django.shortcuts import render
-from django.utils import timezone
+from django.shortcuts import render, redirect
 import datetime
 
 # Create your views here.
+#Login
+def logout(request):
+    #TODO: django logout
+    return redirect("/")
+def login(request):
+    error = False
+    if request.method == "POST":  # Useremo sempre la post per i form
+        loginForm = LoginForm(request.POST)
+        # Recupera il form e controlla che sia valido, se sì crea una camera
+        if loginForm.is_valid():
+            #TODO: login django
+            email = loginForm.cleaned_data['email']
+            if Albergatore.autorizzaAccesso(email, loginForm.cleaned_data['password']):
+                id = 0
+                for albergatore in Albergatore.objects.filter(email=email):
+                    id = albergatore.id
+                return redirect("/Home/" + id.__str__())
+            else:
+                error = True
+    loginForm = LoginForm()
+    return render(request, "Login.html", {
+        "form": loginForm,
+        "error": error
+    })
 #Hotel: viste legate alla classe Hotel
 @login_required(login_url='/Login') #è da provare
 #dettagli hotel e lista camere
@@ -51,6 +73,7 @@ def dettaglioHotel(request, hotelID):
         aggiungiCameraForm = None
     #Qui ci sono ancora le pagine html statiche da rendere dinamiche
     return render(request, "InfoHotelAggiungiCamera.html", {
+                    "albergatoreID" : hotel.proprietario.id,
                       "hotel": hotel,
                       "camere": lista, #lista delle camere da scorrere in html
                         "servizi": servizi,
@@ -102,6 +125,7 @@ def listaHotel(request, albergatoreID):
 
     return render(request,
                     "AggiungiHotel.html",{
+                    'albergatoreID' : albergatore.id,
                     'listaHotel' : listaHotel,
                     'form':aggiungiHotelForm
                     })
@@ -118,6 +142,7 @@ def prenotazionePerAlbergatore(request, albergatoreID):
             listaPrenotazioni.append(prenotazione)
     return render(request,
                     "Home.html",{
+            'albergatoreID': albergatoreID,
                     'listaPrenotazioni':listaPrenotazioni
                     })
 

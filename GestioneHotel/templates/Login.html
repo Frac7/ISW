@@ -16,29 +16,20 @@
             <h1 id="intLogo"> The Reception.com</h1>
         </div>
     </header>
-    <form>
-        <div id="imgProfiloContenitore">
-            <img src="" alt="Avatar" class="avatar">
-             <h1 id="intestazionePagina"> Login </h1>
-        </div>
-
-        <div id="formLogin">
-            <label for="log"><b>Username</b></label> <br>
-            <input type="email" placeholder="Inserire la Username" name="log" required> <br>
-
-            <label for="psw"><b>Password</b></label> <br>
-            <input type="password" placeholder="Inserire la Password" name="psw" required> <br>
-
-            <button type="submit">Login</button> <br>
-            <!--<label>
-                <input type="checkbox" checked="checked" name="remember"> Remember me
-            </label>-->
-        </div>
-        <hr>
-        <div id="ritorno">
-            <button type="button" onclick="top.location.href='/'" > Annulla</button>
-            <span class="psw"> Non hai ancora un <a  id="nonHaiAccount"  href="http://localhost:63342/Progetto/GestioneHotel/templates/Registrazione.html"> account?</a></span>
-        </div>
+    <div id="imgProfiloContenitore">
+        <h1 id="intestazionePagina"> Login </h1>
+    </div>
+    {% if error %}
+        <h2 id="errore">I dati inseriti sono errati.</h2> <!--TODO: css errore-->
+    {% endif %}
+    <form method="post" id="formLogin">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Accedi</button>
     </form>
+    <hr>
+    <div id="ritorno">
+        <span class="psw"> Non hai ancora un account?<a  id="nonHaiAccount"  href="/Registrazione"> Registrati. </a></span>
+    </div>
 </body>
 </html>
