@@ -6,6 +6,7 @@ from GestioneHotel.models import *
 from GestioneHotel.forms import *
 from django.shortcuts import render
 from django.utils import timezone
+import datetime
 
 # Create your views here.
 #Hotel: viste legate alla classe Hotel
@@ -159,10 +160,33 @@ def Main(request):
 def ListaCamereDisponibili(request):
     return render(request, "ListaCamereDisponibili.html")
 
-def Prenota(request):
+def Prenota(request,nomeHotel,numeroCamera,postiLetto,idCamera,arrivo,partenza):
     if request.method == "POST":
         # Registare la prenotazione
         formPrenota = FormPrenota(request.POST)
-        return render(request, "Prenota.html", {"dataArrivo": request, "dataPartenza": request, "camera": request})
+        if formPrenota.is_valid():
+            #recupero i dati della prenotazione
+            nuovaPrenotazione=Prenotazione()
+            utente = formPrenota.cleaned_data['prenotaUtente']
+            arrivo = formPrenota.cleaned_data['prenotaCheckin']
+            partenza = formPrenota.cleaned_data['prenotaCheckout']
+            idCamera = formPrenota.cleaned_data['prenotaIdCamera']
+            # Qui il slvataggio
+            nuovaPrenotazione.utente=utente
+            nuovaPrenotazione.checkin=datetime.datetime.strptime(arrivo, "%d-%m-%Y")
+            nuovaPrenotazione.checkout=datetime.datetime.strptime(partenza, "%d-%m-%Y")
+            nuovaPrenotazione.camera=Camera.objects.get(id=idCamera)
+            nuovaPrenotazione.save()
+
+            return render(request, "PrenotazioneEffettuata.html")
+        else:
+            return render(request, "Main.html")
     else:
-        return render(request, "Prenota.html", {"dataArrivo": request, "dataPartenza": request, "camera":request})
+        #imposto i valori di default nella form (sono campi hidden
+        formPrenota = FormPrenota(initial={'prenotaCheckout': partenza,'prenotaCheckin': arrivo, 'prenotaIdCamera': idCamera})
+
+        return render(request, "Prenota.html", {'form':formPrenota,'nomeHotel':nomeHotel,'numeroCamera':numeroCamera,'postiLetto':postiLetto,'idCamera':idCamera,'arrivo':arrivo,'partenza':partenza})
+
+
+def PrenotazioneEffettuata(request):
+    return render(request, "PrenotazioneEffettuata.html")

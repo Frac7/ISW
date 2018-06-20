@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="it">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author">
+    <meta name="keywords" content="the reception reseption booking hotel prenota">
+    <link rel="stylesheet" href="{% static 'Style.css' %}">
+    <title>Prenotazione Effettuata</title>
+</head>
+<body>
+    <header>
+        <div id="intestazione">
+            <img id="logo" src="{% static 'img/LogoBooking.png' %}" alt="Logo" width="100" height="100">
+            <h1 id="intLogo"> The Reception.com</h1>
+        </div>
+        <p>Congratulazioni!</p>
+        <p>La tua camera è stata prenotata.<p>
+        <p>Riceverai una mail di conferma con i dettagli per il pagamento, all'indirizzo indicato</p>
+        <p>Lo staff di The Reception.com ti augura una buona vacanza!</p>
+        <p><a href="Main">Torna alla Home</a></p>
+
+</body>
+</html>

@@ -29,7 +29,8 @@ urlpatterns = [
     #url(r'^Main/', views.Main), #questa sara' la pagina iniziale, quindi si dovrebbe inserire $ al posto di Main/
     url(r'^$', views.Main), #questa sara' la pagina iniziale, quindi si dovrebbe inserire $ al posto di Main/
     url(r'^ListaCamereDisponibili/', views.ListaCamereDisponibili),
-    url(r'^Prenota/', views.Prenota),
+    url(r'^Prenota/(?P<nomeHotel>\D+)/(?P<numeroCamera>[\w-]+)/(?P<postiLetto>\d+)/(?P<idCamera>\d+)/(?P<arrivo>[\w-]+)/(?P<partenza>[\w-]+)/', views.Prenota),
+    url(r'PrenotazioneEffettuata/', views.PrenotazioneEffettuata)
     #url(r'^Registrazione/', view da creare),
     #url(r'^Login/', view da creare),
 ]

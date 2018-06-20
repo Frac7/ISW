@@ -33,7 +33,7 @@ class FormRicerca(forms.Form):
     elencoCitta = [(hotel.citta, hotel.citta) for hotel in Hotel.objects.order_by('citta')]
     # html select della citta dell'elenco delle citta disponibili
     citta=forms.ChoiceField(label="Destinazione",widget=forms.Select, choices=elencoCitta)
-    # input tata arrivo
+    # input data arrivo
     dataArrivo = forms.DateField(label="Arrivo",widget=forms.SelectDateWidget())
     #input data partenza
     dataPartenza = forms.DateField(label="Partenza",widget=forms.SelectDateWidget())
@@ -41,10 +41,8 @@ class FormRicerca(forms.Form):
     posti = forms.ChoiceField(label="Posti",choices=elencoPosti)
 
 class FormPrenota(forms.Form):
-
-    #recupero l'elenco delle citta dagli hotel
-    utente=forms.EmailField(label="Email")
-    dataArrivo = forms.DateField(label="Arrivo",widget=forms.SelectDateWidget())
-    #input data partenza
-    dataPartenza = forms.DateField(label="Partenza",widget=forms.SelectDateWidget())
-    # TODO: Aggiungere Camera
+    # input dell'indirizzo Email dell'utente che effettua la prenotazione
+    prenotaUtente = forms.EmailField(label="Email")
+    prenotaCheckin = forms.CharField(widget=forms.HiddenInput())
+    prenotaCheckout = forms.CharField(widget=forms.HiddenInput())
+    prenotaIdCamera = forms.CharField(widget=forms.HiddenInput())
