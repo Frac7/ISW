@@ -85,15 +85,15 @@ class Camera(models.Model):
         return serviziPerCamera
     def getHotel(self):
         return self.hotel
-    def disponibilitaCamera(self, da, a, false=None, true=None):
+    def disponibilitaCamera(self, da, a):
         # dovrei controllare la lista delle prenotazioni che hanno come camera, questa, e vedere se quest'ultima
         # e' libera in quel lasso di tempo - GIUSTO?
         # perche' altrimenti non capisco questa funzione => Date due prenotazioni questa funzione avrebbe da restituire
         # le date libere pre-prenotazioni, post-prenotazioni e in mezzo se non sono consecutive
-        if self.da > Prenotazione(camera=self.id).checkout and self.a > Prenotazione(camera=self.id).checkout or self.da < Prenotazione(camera=self.id).checkin and self.a < Prenotazione(camera=self.id).checkin:
-            return true
+        if da > Prenotazione(camera=self.id).checkout and a > Prenotazione(camera=self.id).checkout or da < Prenotazione(camera=self.id).checkin and a < Prenotazione(camera=self.id).checkin:
+            return True
         else:
-            return false
+            return False
     def __unicode__(self):
         return "%s, %s" % (self.numero, self.hotel)
 

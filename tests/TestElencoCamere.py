@@ -45,7 +45,7 @@ class TestElencoCamere(TestCase):
 
     def testViewElencoCamere(self):
         # Per visualizzare la lista camere e' necessario loggarsi, si manda una richiesta POST con i dati
-        response = self.client.post("/Login.html/", {"email": self.albergatore.email, "password": self.albergatore.password})
+        response = self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password})
         self.assertTrue(response)
         response = self.client.get("/InfoHotelAggiungiCamera/" + self.hotel1.id.__str__() + "/", follow=True)
 
