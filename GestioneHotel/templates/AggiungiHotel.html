@@ -53,27 +53,21 @@
         </form>
     </div>
     <div id="divHotelAggiunti">
-        {% if vuoto %}
-            <h2>Ancora nessun hotel aggiunto alla lista...</h2>
-        {% endif %}
-        <h1>I tuoi Hotel</h1>
+        <h1 id="intestazioneAggiungiHotel"> Qui, trovi gli hotel che possiedi e quante camere ha ciascun Hotel.</h1>
+        <p id="testoPerCliente4"> Così puoi tener d'occhio sempre se c'è tutto.</p>
         <table>
             <tr>
-                <td><h2> Nome Hotel</h2></td>
-                <td><h2>Numero Camere</h2></td>
+                <th> Nome Hotel</th>
+                <td>Numero Camere</td>
             </tr>
         {% for hotel in listaHotel %}
 
             {%if hotel.nome %}
              <tr>
-                <th>
-                    <h3>    <a id="dettaglioHotel" href="/InfoHotelAggiungiCamera/{{hotel.id}}">{{ hotel.nome }}</a> </h3>
-                </th>
+                <td> <a id="dettaglioHotel" href="/InfoHotelAggiungiCamera/{{hotel.id}}">{{ hotel.nome }}</a> </td>
             {%else%}
                 {% if hotel %}
-                    <th>
-                        <h3>{{hotel}}</h3>
-                    </th>
+                    <td> {{hotel}} </td>
                 {% endif %}
              </tr>
             {% endif %}

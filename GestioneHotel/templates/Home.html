@@ -27,19 +27,23 @@
 
             </nav>
         </div>
+        <h2 id="intestazioneHome"> Qui, trovi le prenotazioni fatte ai tuoi Hotel.</h2>
         <div id="tabellaPrenotazioni">
-        {% if vuoto %}
-            <h2>Ancora nessuna prenotazione...</h2>
-        {% endif %}
-        <h1>Le prenotazioni per i tuoi Hotel</h1>
             <table>
+                <tr>
+                    <th> L'Hotel</th>
+                    <th> n° Camera</th>
+                    <th> Ordinante</th>
+                    <th> Data arrivo </th>
+                    <th> Data partenza</th>
+                </tr>
                 {% for prenotazione in listaPrenotazioni %}
                 <tr>
-                    <th> {{prenotazione.camera.hotel.nome}} </th>
-                    <th> {{prenotazione.camera.numero}} </th>
-                    <th> {{prenotazione.utente}} </th>
-                    <th> {{prenotazione.checkin}} </th>
-                    <th> {{prenotazione.checkout}} </th>
+                    <td> {{prenotazione.camera.hotel.nome}} </td>
+                    <td> {{prenotazione.camera.numero}} </td>
+                    <td> {{prenotazione.utente}} </td>
+                    <td> {{prenotazione.checkin}} </td>
+                    <td> {{prenotazione.checkout}} </td>
                 </tr>
                 {% endfor %}
             </table>

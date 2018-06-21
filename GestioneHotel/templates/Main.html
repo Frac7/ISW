@@ -22,6 +22,10 @@
                     <button id="btnRegistrati" type="button" value="registrati" onclick="top.location.href='/signup'">  <b> Registrati </b> </button>
                     <button id="btnAccedi" type="button" value="accedi" onclick="top.location.href='/Login'">  <b> Accedi </b> </button>
                 </div>
+                <!--<div id="userImpostazioni">
+                    <a id="userImpostazioniC" href="Cookies.html">  Cookies </a>
+                    <a id="userImpostazioniA" href="Assistenza.html"> Assistenza </a>
+                </div>-->
 
             </nav>
         </div>
@@ -34,8 +38,8 @@
         <form method="post">
         {% csrf_token %}
             {{ form }}
-            {% if msg %}
-                {{ msg }}
+            {% if noresult == True %}
+                Nessuna Camera Trovata
             {% endif %}
 
             <button id="btnCerca" type="submit"> <b> Cerca</b> </button>
