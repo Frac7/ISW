@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals #Per lettere accentate...
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseNotFound
+
 from GestioneHotel.forms import *
 import datetime
 from django.contrib.auth import login, authenticate, logout
@@ -51,7 +53,6 @@ def signin(request):
             password = loginForm.cleaned_data['password']
             # Autenticazione: chi è l'utente
             user = authenticate(username=email, password=password)
-            #if Albergatore.autorizzaAccesso(email, loginForm.cleaned_data['password']):
             if user != None:
                 id = 0
                 for albergatore in Albergatore.objects.filter(email=email):
@@ -81,6 +82,15 @@ def dettaglioHotel(request, hotelID):
         hotel = None
     #Date tutte le camere registrare nel db, prende quelle presenti in hotel
     if hotel != None:
+        email = ""
+        for hotel in Hotel.objects.filter(id=hotelID):
+            email = hotel.proprietario.email
+        # Tentativo di accesso ad una pagina di un altro albergatore tramite albergatore id
+        id = ""
+        if not (str(request.user).__eq__(str(email))):
+            for obj in Albergatore.objects.filter(email=request.user):
+                id = obj.id
+            return redirect("/Home/" + str(id))
         # Collegato al form aggiungi camera
         if request.method == "POST":  # Useremo sempre la post per i form
             aggiungiCameraForm = AggiungiCameraForm(request.POST)
@@ -110,9 +120,7 @@ def dettaglioHotel(request, hotelID):
         if len(lista) == 0:
             nessunCamera = True
     else:
-        lista = []
-        servizi = {}
-        aggiungiCameraForm = None
+        return HttpResponseNotFound()
     #Qui ci sono ancora le pagine html statiche da rendere dinamiche
     return render(request, "InfoHotelAggiungiCamera.html", {
                     "albergatoreID" : hotel.proprietario.id,
@@ -128,31 +136,40 @@ def listaHotel(request, albergatoreID):
     nessunHotel = False
     try:
         albergatore = Albergatore.objects.get(id=albergatoreID)
+        # Tentativo di accesso ad una pagina di un altro albergatore tramite albergatore id
+        id = ""
+        if not (str(request.user).__eq__(str(albergatore.email))):
+            for obj in Albergatore.objects.filter(email=request.user):
+                id = obj.id
+            return redirect("/AggiungiHotel/" + str(id))
     except Albergatore.DoesNotExist:
         albergatore = None
-    if request.method == "POST":
-        aggiungiHotelForm = AggiungiHotelForm(request.POST)
+    if albergatore != None:
+        if request.method == "POST":
+            aggiungiHotelForm = AggiungiHotelForm(request.POST)
 
-        if aggiungiHotelForm.is_valid():
-            nuovoIndirizzo = Indirizzo(via=aggiungiHotelForm.cleaned_data['via'],
-                                       numero=aggiungiHotelForm.cleaned_data['numeroCivico'])
-            nuovoIndirizzo.save()
+            if aggiungiHotelForm.is_valid():
+                nuovoIndirizzo = Indirizzo(via=aggiungiHotelForm.cleaned_data['via'],
+                                           numero=aggiungiHotelForm.cleaned_data['numeroCivico'])
+                nuovoIndirizzo.save()
 
-            nuovoHotel = Hotel(nome=aggiungiHotelForm.cleaned_data['nome'],
-                               descrizione=aggiungiHotelForm.cleaned_data['descrizione'],
-                               citta=aggiungiHotelForm.cleaned_data['citta'],
-                               indirizzo=nuovoIndirizzo,
-                               proprietario=albergatore)
-            nuovoHotel.save()
+                nuovoHotel = Hotel(nome=aggiungiHotelForm.cleaned_data['nome'],
+                                   descrizione=aggiungiHotelForm.cleaned_data['descrizione'],
+                                   citta=aggiungiHotelForm.cleaned_data['citta'],
+                                   indirizzo=nuovoIndirizzo,
+                                   proprietario=albergatore)
+                nuovoHotel.save()
 
-    aggiungiHotelForm= AggiungiHotelForm()
-    listaHotel= []
-    for hotel in Hotel.objects.all():
-        if hotel.proprietario.__eq__(albergatore):
-            listaHotel.append(hotel)
-            listaHotel.append(len(hotel.listaCamere()))
-    if len(listaHotel) == 0:
-        nessunHotel = True
+        aggiungiHotelForm= AggiungiHotelForm()
+        listaHotel= []
+        for hotel in Hotel.objects.all():
+            if hotel.proprietario.__eq__(albergatore):
+                listaHotel.append(hotel)
+                listaHotel.append(len(hotel.listaCamere()))
+        if len(listaHotel) == 0:
+            nessunHotel = True
+    else:
+        return HttpResponseNotFound()
     return render(request,
                     "AggiungiHotel.html",{
                     'albergatoreID' : albergatore.id,
@@ -166,14 +183,23 @@ def prenotazionePerAlbergatore(request, albergatoreID):
     nessunaPrenotazione = False
     try:
         albergatore=Albergatore.objects.get(id=albergatoreID)
+        # Tentativo di accesso ad una pagina di un altro albergatore tramite albergatore id
+        id = ""
+        if not(str(request.user).__eq__(str(albergatore.email))):
+            for obj in Albergatore.objects.filter(email=request.user):
+                id = obj.id
+            return redirect("/Home/" + str(id))
     except Albergatore.DoesNotExist:
         albergatore= None
-    listaPrenotazioni = []
-    for prenotazione in Prenotazione.objects.all():
-        if prenotazione.camera.hotel.proprietario.__eq__(albergatore):
-            listaPrenotazioni.append(prenotazione)
-    if len(listaPrenotazioni) == 0:
-        nessunaPrenotazione = True
+    if albergatore != None:
+        listaPrenotazioni = []
+        for prenotazione in Prenotazione.objects.all():
+            if prenotazione.camera.hotel.proprietario.__eq__(albergatore):
+                listaPrenotazioni.append(prenotazione)
+        if len(listaPrenotazioni) == 0:
+            nessunaPrenotazione = True
+    else:
+        return HttpResponseNotFound()
     return render(request,
                     "Home.html",{
             'albergatoreID': albergatoreID,
@@ -181,12 +207,12 @@ def prenotazionePerAlbergatore(request, albergatoreID):
                     'vuoto': nessunaPrenotazione
                     })
 
-#TODO: 1) un utente loggato non deve poter accedere alle informazioni degli altri albergatori, si può aggiungere un piccolo
-#TODO: controllo (es. si tenta di accedere manualmente alla pagina prenotazioni di un albergatore con id diverso dal proprio)
-#TODO: 2) un utente loggato deve poter visualizzare questa pagina? se volessimo aggiunger il vincolo:
-#TODO: if user is authenticated then redirect to prenotazioni
-
 def Main(request):
+    if request.user.is_authenticated:
+        id = ""
+        for albergatore in Albergatore.objects.filter(email=request.user):
+            id = albergatore.id
+        return redirect("/Home/"+str(id))
     if request.method == "POST":
         # Da Main se clic su cerca...
         formRicerca = FormRicerca(request.POST)
