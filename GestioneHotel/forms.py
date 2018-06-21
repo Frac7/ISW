@@ -18,16 +18,21 @@ class SignUpForm(UserCreationForm):
 
 #Collegato alla view aggiungiCamera
 class AggiungiCameraForm(forms.Form):
+    #Campo numero camera
     numero = forms.CharField(label="Numero",max_length=15,required=True,widget=forms.TextInput(attrs={'id': 'campoCamera'}))
+    #Posti camera: da 1 a 6
     elencoPosti = [(i, i) for i in range(1, 7)]
     postiLetto = forms.ChoiceField(label="Posti Letto", choices=elencoPosti, widget=forms.Select(attrs={'id' : 'postiCamera'}))
-
+    #Checkboxes servizi disponibili per ogni camera
     servizio1 = forms.BooleanField(required=False,label="TV",widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))
     servizio2 = forms.BooleanField(required=False,label="Aria condizionata",widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))
     servizio3 = forms.BooleanField(required=False,label="Frigo bar",widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))
 
+#Form login
 class LoginForm(forms.Form):
+    #Campo email
     email = forms.EmailField(label="Email",required=True, widget=forms.TextInput(attrs={'id' : 'accediLogin'}))
+    #Campo passowrd
     password = forms.CharField(label="Password",required=True,widget=forms.PasswordInput(attrs={'id' : 'accediPassword'}))
 
 class RegistrazioneAlbergatore(forms.Form):

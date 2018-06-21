@@ -26,7 +26,7 @@
         {% csrf_token %}
         {{ form.as_p }}
         <button id="btnLogin" type="submit">Accedi</button>
-        <button id="btnRitorna" type="submit"> Annulla</button>
+        <button id="btnRitorna" type="button" value="ritorna" onclick="top.location.href='/'"> <b> Annulla </b></button>
         <hr>
         <div id="ritorno">
             <span class="psw"> Non hai ancora un account?<a  id="nonHaiAccount"  href="/Registrazione"> Registrati. </a></span>

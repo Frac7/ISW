@@ -8,7 +8,7 @@ class Albergatore(models.Model):
     email = models.EmailField(max_length=50,default="")
     password = models.CharField(max_length=32,default="")
 
-    @staticmethod
+    @staticmethod #col login di django questo metodo non serve piu'
     def autorizzaAccesso(email, password):
         for albergatore in Albergatore.objects.all():
             if email == albergatore.email and password == albergatore.password:
@@ -47,25 +47,24 @@ class Servizio(models.Model):
     def __unicode__(self):
         return "%s: %s" % (self.nome, self.descrizioneServizio)
 
+#Classe Hotel
 class Hotel(models.Model):
+    #Nome dell'hotel
     nome = models.CharField(max_length=50,default="")
+    #Descrizione dell'hotel
     descrizione = models.TextField(default="")
+    #Citta' in cui si trova l'hotel
     citta = models.CharField(max_length=50,default="")
+    #Indirizzo in cui si trova l'hotel
     indirizzo = models.ForeignKey(Indirizzo)
+    #Albergatore che possiede l'hotel
     proprietario = models.ForeignKey(Albergatore)
-
+    #Lista delle camere presenti nell'hotel
     def listaCamere(self):
         return Camera.objects.filter(hotel=self)
-
-    def contaCamere(self):
-         # count = 0
-         # for camera in Camera.objects.all():
-         #     if camera.hotel.__eq__(self):
-         #         count += 1
-         # return count
-        return len(self.listaCamere())
-
+    #Override stampa oggetto Hotel
     def __unicode__(self):
+        #Nome hotel, citta' hotel
         return "%s, %s" % (self.nome, self.citta)
 
 
@@ -74,31 +73,20 @@ class Camera(models.Model):
     postiLetto = models.IntegerField(default=1)
     servizi = models.ManyToManyField(Servizio, through="ServiziDisponibili",through_fields=("camera","servizio"))
     hotel = models.ForeignKey(Hotel)
-    def getNumero(self):
-        return self.numero
-    def getPostiLetto(self):
-        return self.postiLetto
-    def listaServizi(self):  # restituisce la lista di servizi per la camera
+
+    def listaServizi(self):
         serviziPerCamera = []
         for servizioDisponibile in ServiziDisponibili.objects.filter(camera=self.id):
             serviziPerCamera.append(Servizio.objects.filter(id=servizioDisponibile.servizio.id))
         return serviziPerCamera
-    def getHotel(self):
-        return self.hotel
+
     def disponibilitaCamera(self, da, a):
-        # dovrei controllare la lista delle prenotazioni che hanno come camera, questa, e vedere se quest'ultima
-        # e' libera in quel lasso di tempo - GIUSTO?
-        # perche' altrimenti non capisco questa funzione => Date due prenotazioni questa funzione avrebbe da restituire
-        # le date libere pre-prenotazioni, post-prenotazioni e in mezzo se non sono consecutive
-        flag = True
         listaPrenotazioniPerCamera = Prenotazione.objects.filter(camera=self)
         for prenotazione in listaPrenotazioniPerCamera:
-            if da.year > prenotazione.checkout.year and a.year > Prenotazione(camera=self).checkout.year and da.month > prenotazione.checkout.month and a.month > prenotazione.checkout.month and da.day > prenotazione.checkout.day and a.day > prenotazione.checkout.day or da.year < prenotazione.checkin.year and a.year < prenotazione.checkin.year and da.month < prenotazione.checkin.month and a.month < prenotazione.checkin.month and da.day < prenotazione.checkin.day and a.day < prenotazione.checkin.day:
-                flag = True
-            else:
-                flag = False
+            if not(da.year > prenotazione.checkout.year and a.year > Prenotazione(camera=self).checkout.year and da.month > prenotazione.checkout.month and a.month > prenotazione.checkout.month and da.day > prenotazione.checkout.day and a.day > prenotazione.checkout.day or da.year < prenotazione.checkin.year and a.year < prenotazione.checkin.year and da.month < prenotazione.checkin.month and a.month < prenotazione.checkin.month and da.day < prenotazione.checkin.day and a.day < prenotazione.checkin.day):
                 return False
         return True
+
     def __unicode__(self):
         return "%s, %s" % (self.numero, self.hotel)
 

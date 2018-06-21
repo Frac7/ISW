@@ -6,7 +6,7 @@ import unittest
 class TestAggiungiCamera(TestCase):
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password
-        email = "username@dominio"
+        email = "username@dominio.it"
         password = "unaPassword"
         self.albergatore = Albergatore(nome="un", cognome="Albergatore", email=email, password=password)
         self.albergatore.save()
@@ -32,7 +32,6 @@ class TestAggiungiCamera(TestCase):
         tuttiGliAlbergatori = Albergatore.objects.all()
         self.assertEqual(self.albergatore.email, tuttiGliAlbergatori.get(id=self.albergatore.id).email)
         self.assertEqual(self.albergatore.password, tuttiGliAlbergatori.get(id=self.albergatore.id).password)
-        Albergatore.autorizzaAccesso(self.albergatore.email, self.albergatore.password)
 
     #task aggiungi camera, requisito user story
     def testAggiungiCamera(self):

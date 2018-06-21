@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import *
+
+from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.auth import authenticate
 from django.test import TestCase, Client
@@ -162,10 +164,14 @@ class TestCamera(TestCase):
 class TestHotel(TestCase):
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password
-        email = "username@dominio"
+        email = "username@dominio.it"
         password = "unaPassword"
         self.albergatore = Albergatore(nome="un", cognome="Albergatore", email=email, password=password)
         self.albergatore.save()
+        #Creazione user django per login
+        self.user = User(username=email)
+        self.user.set_password(password)
+        self.user.save()
         # Creazione singolo servizio: nome e descrizione
         servizio = Servizio(nome="TV", descrizioneServizio="televisione")
         servizio.save()
@@ -184,59 +190,68 @@ class TestHotel(TestCase):
         servizi.save()
         #Creazione client per test richiesta/risposta
         self.client = Client()
+        self.client.logout()
+
+    def testModelsAggiungiCamera(self):
+        #Recupera la camera creata
+        camera = Camera.objects.all().get(id=self.camera.id)
+        #Controlla che il campo camera dell'hotel sia uguale all'hotel in cui la camera è stata aggiunta
+        self.assertEqual(camera.hotel, self.hotel, "Camera non aggiunta all'hotel")
+        #Controlla che sia stata aggiunta la camera
+        self.assertEqual(len(Camera.objects.all()), 1, "La lunghezza della lista camera e\' diversa da 1")
+        #Controlla che la camera sia presente nell'hotel
+        self.assertEqual(Camera.objects.all().get(id=self.camera.id), Camera.objects.filter(hotel=self.hotel).get(id=self.camera.id))
+        hotel = Hotel(nome="unAltroHotel", descrizione="unAltroHotelACagliari", citta="Cagliari",
+                      indirizzo=self.hotel.indirizzo, proprietario=self.albergatore)
+        #Dopo aver creato un altro hotel, controlla che la camera non sia presente nel secondo
+        self.assertNotEqual(self.camera.hotel, hotel)
 
     def testModelsListaCamere(self):
-        #Test models (test con gli oggetti del DB)
-        camera = Camera.objects.all().get(id=self.camera.id)
-        self.assertEqual(camera.hotel, self.hotel, "Camera non aggiunta")
-        self.assertEqual(len(Camera.objects.all()), 1, "La lunghezza della lista camera e\' diversa da 1")
-        self.assertEqual(len(camera.hotel.listaCamere()), 1, "La lunghezza della lista camera e\' diversa da 1")
-        self.assertEqual(Camera.objects.all().get(id=self.camera.id), Camera.objects.filter(hotel=self.hotel).get(id=self.camera.id))
+        #Controlla che lista camere restituisca il valore giusto
+        self.assertEqual(len(self.hotel.listaCamere()), 1, "La lunghezza della lista camera e\' diversa da 1")
+        hotel = Hotel(nome="unAltroHotel", descrizione="unAltroHotelACagliari", citta="Cagliari", indirizzo=self.hotel.indirizzo, proprietario=self.albergatore)
+        self.assertEqual(len(hotel.listaCamere()), 0, "La lunghezza della lista camera e\' diversa da 0")
+        #Dopo aver creato un altro hotel, controlla che non ci siano camere
+
+    def testViewsUtenteNonLoggato(self):
+        #Un utente non loggato che cerca di accedere ai dettagli di un hotel deve prima effettuare l'accesso
+        response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.hotel.id) +"/")
+        self.assertEquals(response.status_code, 302) #Redirezione
+        self.assertEquals(response.url, "/Login?next=/InfoHotelAggiungiCamera/" + str(self.hotel.id) +"/")
 
     def testViewsListaCamere(self):
-        #Per visualizzare la lista camere e' necessario loggarsi, si manda una richiesta POST con i dati
-        response = self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password})
-        self.assertTrue(response)
-        #Visualizzazione pagina lista camere di un certo hotel
-        response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.hotel.id) +"/", follow=True)
-        #Si controlla che la risposta contenga i dati delle camere
+        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password}, follow=True)
+        response = self.client.post("/InfoHotelAggiungiCamera/" + str(self.albergatore.id), follow=True)
+        #Dopo aver effettuato il login ed aver mandato una richiesta get alla pagina del dettaglio hotel
         self.assertContains(response, self.camera.numero)
         self.assertContains(response, self.camera.postiLetto)
         for servizi in self.camera.listaServizi():
             for servizio in servizi:
                 self.assertContains(response, servizio.nome)
                 self.assertContains(response, servizio.descrizioneServizio)
-        self.assertNotContains(response, "WI-FI")
-
-    def testViewsUtenteNonLoggato(self):
-        response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.hotel.id) +"/")
-        self.assertEquals(response.status_code, 302)
-        #Redirection (login e poi info hotel)
-        self.assertEquals(response.url, "/Login?next=/InfoHotelAggiungiCamera/" + str(self.hotel.id) +"/")
+        #Si controlla che la pagina contenga i dettagli delle camere dell'hotel
 
     def testModelsHotel(self):
-        self.assertEqual(len(Hotel.objects.all()), 1, "La lunghezza della lista hotel e\' diversa da 1")
         unAltroHotel = Hotel('unAltroHotel','unHotelDiversoDalPrecedente',"Roma",self.hotel.indirizzo,self.hotel.proprietario)
+        #Si controlla che sia stato aggiunto un solo hotel
+        self.assertEqual(len(Hotel.objects.all()), 1, "La lunghezza della lista hotel e\' diversa da 1")
         self.assertNotEqual(self.hotel, unAltroHotel)
         self.assertNotEqual(self.camera.hotel, unAltroHotel)
+        #Si controlla, dopo la creazione di un nuovo hotel, che questo sia diverso dal precedente
 
     def testViewsHotel(self):
         response = self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password})
-        self.assertTrue(response)
         response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/", follow=True)
-        #Si controlla che la risposta contenga i dati dell'hotel
+        #Dopo aver effettuato il login, si controlla che la pagina del dettaglio hotel contenga i dettagli dell'hotel
+        self.assertContains(response, self.camera.numero)
         self.assertContains(response, self.hotel.nome)
         self.assertContains(response, self.hotel.descrizione)
-        self.assertContains(response, self.hotel.indirizzo.via)
-        self.assertContains(response, self.hotel.indirizzo.numero)
 
     def testViewsAggiungiCamera(self):
-        response = self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password})
-        self.assertTrue(response)
-        #Invio form
+        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password})
         response = self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/",
                                     {"numero": "101", "postiLetto": "1", "serivizio1": True, "serivizio2": False, "serivizio3": False }, follow=True)
-        # Si controlla che la risposta contenga i dati della camera inserita
+        #Dopo aver effettuato il login e aggiunto una camera con richiesta post, si controlla che questa sia presente
         self.assertContains(response, "101")
         self.assertContains(response, "1")
 

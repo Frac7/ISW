@@ -22,11 +22,6 @@
                     <button id="btnRegistrati" type="button" value="registrati" onclick="top.location.href='/signup'">  <b> Registrati </b> </button>
                     <button id="btnAccedi" type="button" value="accedi" onclick="top.location.href='/Login'">  <b> Accedi </b> </button>
                 </div>
-                <!--<div id="userImpostazioni">
-                    <a id="userImpostazioniC" href="Cookies.html">  Cookies </a>
-                    <a id="userImpostazioniA" href="Assistenza.html"> Assistenza </a>
-                </div>-->
-
             </nav>
         </div>
     </header>
@@ -34,18 +29,16 @@
         <h1 id="testoPerCliente2"> Tutti meritano una vacanza. Cosa aspetti?</h1>
         <p id="testoPerCliente3"> I migliori hotel, pronti a proporti la loro camera per la tua vacanza. </p>
     </div>
+
     <div id="divRicerca">
         <form method="post">
         {% csrf_token %}
             {{ form }}
-            {% if noresult == True %}
-                Nessuna Camera Trovata
-            {% endif %}
-
             <button id="btnCerca" type="submit"> <b> Cerca</b> </button>
         </form>
 
     </div>
+    <p id="errore">{{ msg }}</p>
     <div id="divSuggerimenti">
         <div id="postoConsUno">
             <img id="postoUno" src="{% static 'img/hong-kong.png' %}" alt="Posto Consigliato">

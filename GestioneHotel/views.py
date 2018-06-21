@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals #Per lettere accentate...
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponseForbidden
 
 from GestioneHotel.forms import *
 import datetime
@@ -10,6 +10,10 @@ from django.shortcuts import render, redirect
 
 
 def signup(request):
+    # Se risulta un utente gia' loggato nella sessione
+    if request.user.is_authenticated:
+        id = Albergatore.objects.all().get(email=request.user).id
+        return redirect("/Home/" + str(id))  # L'utente loggato che cerca di registrarsi viene rimandato alla sua home (deve prima fare logout)
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -35,68 +39,78 @@ def signup(request):
     return render(request, 'signup.html', {'form': form})
 
 
-#Login
-@login_required(login_url='/Login')
-def signout(request):
+#Logout
+@login_required(login_url='/Login') #Per effettuare il logout è richiesto il login
+def signout(request): #View logout
     #Distrugge la sessione
     logout(request)
+    #Si ritorna al main, la pagina del sito che vedono gli utenti non registrati
     return redirect("/")
 
-
+#Login
 def signin(request):
-    error = False
-    if request.method == "POST":  # Useremo sempre la post per i form
-        loginForm = LoginForm(request.POST)
-        # Recupera il form e controlla che sia valido, se sì crea una camera
+    #Se risulta un utente gia' loggato nella sessione
+    if request.user.is_authenticated:
+        #Inizializzazione variabile id
+        id = Albergatore.objects.all().get(email=request.user).id
+        return redirect("/Home/" + str(id)) #L'utente loggato che cerca di accedere viene rimandato alla sua home
+    error = False #Inizializzazione variabile per i messaggi di errore
+    if request.method == "POST":  # Se il metodo della richiesta è POST
+        loginForm = LoginForm(request.POST) #Si recuperano le informazioni del login form
+        #Se il form è valido (le informazioni inserite nel form)
         if loginForm.is_valid():
+            #Si recupera il testo dal campo email
             email = loginForm.cleaned_data['email']
+            #Si recupera il testo dal campo password
             password = loginForm.cleaned_data['password']
             # Autenticazione: chi è l'utente
             user = authenticate(username=email, password=password)
+            #Se l'utente esiste
             if user != None:
-                id = 0
-                for albergatore in Albergatore.objects.filter(email=email):
-                    id = albergatore.id
+                id = Albergatore.objects.all().get(email=user).id
                 #Login utente
                 login(request, user)
+                #L'utente viene mandato nella sua home
                 return redirect("/Home/" + str(id))
             else:
+                #Errore: l'utente non esiste
                 error = True
+        #Errore: form non valido
         else:
             error = True
+    #Nuovo form vuoto nel caso in cui non sia stata presentata una richiesta POST, es: primo caricamento della pagina senza inserimento dati
     loginForm = LoginForm()
+    #Restituzione template e campi dinamici
     return render(request, "Login.html", {
         "form": loginForm,
         "error": error
     })
 
-
-#Hotel: viste legate alla classe Hotel
-@login_required(login_url='/Login')
-#dettagli hotel e lista camere
+#Hotel
+@login_required(login_url='/Login') #Questa pagina è visibile solo da un albergatore, utente registrato
+#Dettagli hotel e lista camere, viene passato con POST l'id dell'hotel interessato
 def dettaglioHotel(request, hotelID):
+    #Inizializzazione variabile per indicare l'assenza di camere nell'hotel (nessuna camera ancora aggiunta)
     nessunCamera = False
+    #Recupera l'hotel in base all'ID
     try:
         hotel = Hotel.objects.get(id=hotelID)
     except Hotel.DoesNotExist:
         hotel = None
     #Date tutte le camere registrare nel db, prende quelle presenti in hotel
-    if hotel != None:
-        email = ""
-        for hotel in Hotel.objects.filter(id=hotelID):
-            email = hotel.proprietario.email
-        # Tentativo di accesso ad una pagina di un altro albergatore tramite albergatore id
-        id = ""
+    if hotel != None: #Se l'hotel esiste
+        email = Hotel.objects.all().get(id=hotelID).proprietario.email
+        # Tentativo di accesso ad una pagina di un altro albergatore tramite hotel id diverso (da uno di quelli possibili, quindi posseduti) in barra indirizzi
         if not (str(request.user).__eq__(str(email))):
-            for obj in Albergatore.objects.filter(email=request.user):
-                id = obj.id
-            return redirect("/Home/" + str(id))
+            id = Albergatore.objects.all().get(email=request.user).id
+            return redirect("/Home/" + str(id)) #Utente rimandato alla sua home
+            #return HttpResponseForbidden() # Variante con codice 403
         # Collegato al form aggiungi camera
-        if request.method == "POST":  # Useremo sempre la post per i form
+        if request.method == "POST":  #In caso di richiesta POST
             aggiungiCameraForm = AggiungiCameraForm(request.POST)
             # Recupera il form e controlla che sia valido, se sì crea una camera
             if aggiungiCameraForm.is_valid():
-                listaServizi = []
+                listaServizi = [] #Vengono aggiunti i servizi in base a quelli disponibili
                 if aggiungiCameraForm.cleaned_data['servizio1'] == True:
                     listaServizi.append(Servizio.objects.all().get(nome="TV"))
                 if aggiungiCameraForm.cleaned_data['servizio2'] == True:
@@ -108,20 +122,25 @@ def dettaglioHotel(request, hotelID):
                                      postiLetto=aggiungiCameraForm.cleaned_data['postiLetto'],
                                      hotel=hotel)
                 nuovaCamera.save()
+                # Salvataggio camera nel DB
                 for servizio in listaServizi:
                     nuovoServizioDisponibile = ServiziDisponibili(camera=nuovaCamera, servizio=servizio)
                     nuovoServizioDisponibile.save()
-                # Salvataggio camera nel db
+                #Salvataggio della coppia camera/servizio nel DB
+        #Recuperare la lista delle camere per l'hotel
         lista = hotel.listaCamere()
         servizi = {} #Dizionario: key = id camera, value = servizio (ottenuto filtrando prima i servizi per camera e poi i servizi per id)
         for camera in lista:
             servizi[camera.id] = camera.listaServizi()
+        #Form vuoto per aggiungere una camera all'hotel
         aggiungiCameraForm = AggiungiCameraForm()
+        #Viene stampato un messaggio apposito nella pagina se ancora nessuna camera è stata aggiunta all'hotel
         if len(lista) == 0:
             nessunCamera = True
     else:
+        #Se l'hotel non è stato trovato, la risposta avrà codice 404 (not found)
         return HttpResponseNotFound()
-    #Qui ci sono ancora le pagine html statiche da rendere dinamiche
+    #Viene mostrata la pagina del dettaglio hotel con tutte le informazioni dinamiche
     return render(request, "InfoHotelAggiungiCamera.html", {
                     "albergatoreID" : hotel.proprietario.id,
                       "hotel": hotel,
@@ -135,13 +154,11 @@ def dettaglioHotel(request, hotelID):
 def listaHotel(request, albergatoreID):
     nessunHotel = False
     try:
-        albergatore = Albergatore.objects.get(id=albergatoreID)
+        albergatore = Albergatore.objects.all().get(id=albergatoreID) #Si recupera l'albergatore da albergatore id
         # Tentativo di accesso ad una pagina di un altro albergatore tramite albergatore id
-        id = ""
-        if not (str(request.user).__eq__(str(albergatore.email))):
-            for obj in Albergatore.objects.filter(email=request.user):
-                id = obj.id
-            return redirect("/AggiungiHotel/" + str(id))
+        if not (str(request.user).__eq__(str(albergatore.email))): #Se l'albergatore a cui corrisponde albergatore id è diverso dall'utente loggato
+            id = Albergatore.objects.all().get(email=request.user).id
+            return redirect("/AggiungiHotel/" + str(id)) #L'utente viene rimandato alla sua pagina aggiungi hotel
     except Albergatore.DoesNotExist:
         albergatore = None
     if albergatore != None:
@@ -169,7 +186,7 @@ def listaHotel(request, albergatoreID):
         if len(listaHotel) == 0:
             nessunHotel = True
     else:
-        return HttpResponseNotFound()
+        return HttpResponseNotFound() #Albergatore non esistente, risposta 404
     return render(request,
                     "AggiungiHotel.html",{
                     'albergatoreID' : albergatore.id,
@@ -182,13 +199,12 @@ def listaHotel(request, albergatoreID):
 def prenotazionePerAlbergatore(request, albergatoreID):
     nessunaPrenotazione = False
     try:
-        albergatore=Albergatore.objects.get(id=albergatoreID)
+        albergatore = Albergatore.objects.all().get(id=albergatoreID)  # Si recupera l'albergatore da albergatore id
         # Tentativo di accesso ad una pagina di un altro albergatore tramite albergatore id
-        id = ""
-        if not(str(request.user).__eq__(str(albergatore.email))):
-            for obj in Albergatore.objects.filter(email=request.user):
-                id = obj.id
-            return redirect("/Home/" + str(id))
+        if not (str(request.user).__eq__(str(
+                albergatore.email))):  # Se l'albergatore a cui corrisponde albergatore id è diverso dall'utente loggato
+            id = Albergatore.objects.all().get(email=request.user).id
+            return redirect("/Home/" + str(id)) #L'utente viene rimandato alla sua pagina prenotazioni
     except Albergatore.DoesNotExist:
         albergatore= None
     if albergatore != None:
@@ -199,7 +215,7 @@ def prenotazionePerAlbergatore(request, albergatoreID):
         if len(listaPrenotazioni) == 0:
             nessunaPrenotazione = True
     else:
-        return HttpResponseNotFound()
+        return HttpResponseNotFound() #Albergatore non trovato, errore 404
     return render(request,
                     "Home.html",{
             'albergatoreID': albergatoreID,
@@ -208,12 +224,9 @@ def prenotazionePerAlbergatore(request, albergatoreID):
                     })
 
 def Main(request):
-    if request.user.is_authenticated:
-        id = ""
-        for albergatore in Albergatore.objects.filter(email=request.user):
-            id = albergatore.id
-        return redirect("/Home/"+str(id))
-
+    if request.user.is_authenticated: #Se l'utente ha fatto login
+        id = Albergatore.objects.all().get(email=request.user).id  # Si recupera l'id albergatore con l'email
+        return redirect("/Home/"+str(id)) #Viene rimandato alla sua home (in teoria non sono previste prenotazioni per gli utenti loggati)
     if request.method == "POST":
         # Da Main se clic su cerca...
         formRicerca = FormRicerca(request.POST)
