@@ -17,13 +17,13 @@
             <h1 id="intLogo"> The Reception.com</h1>
         </div>
 
-        {% block content %}
-          <h2>Sign up</h2>
+
+          <h2>Registrati come Albergatore per Inserire e Gestire i tuoi Hotel!</h2>
           <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Sign up</button>
+            <button type="submit">Registrati</button>
           </form>
-        {% endblock %}
+
     </header>
 </body>

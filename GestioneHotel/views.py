@@ -21,12 +21,16 @@ def signup(request):
             cognome = form.cleaned_data.get('cognome')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
-            login(request, user)
+            # Una volta Registrato dovrebbe fare un login automatico
+            #login(request, user)
             # Bisogna anche creare l'Albergatore
             albergatore=Albergatore(nome=nome, cognome=cognome, email=username, password=raw_password)
             albergatore.save()
 
-            return redirect('/Home/'+str(albergatore.id))
+            # Se viene attivato il login automatico si deve fare il redirect alla sua home
+            #return redirect('/Home/'+str(albergatore.id))
+            # Altrimenti redirect a Main
+            return redirect('/')
     else:
         form = SignUpForm()
 
