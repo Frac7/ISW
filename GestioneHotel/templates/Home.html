@@ -22,12 +22,16 @@
                 </div>
                 <div id="userImpostazioni">
                     <a id="userImpostazioniH" href=""> Prenotazioni</a>
-                    <a id="userImpostazioniAdd" href="/AggiungiHotel/{{ albergatoreID }}"> Lista Hotel </a> <!--TODO: passare a render l'ID albergatore-->
+                    <a id="userImpostazioniAdd" href="/AggiungiHotel/{{ albergatoreID }}"> Lista Hotel </a>
                 </div>
 
             </nav>
         </div>
         <div id="tabellaPrenotazioni">
+        {% if vuoto %}
+            <h2>Ancora nessuna prenotazione...</h2>
+        {% endif %}
+        <h1>Le prenotazioni per i tuoi Hotel</h1>
             <table>
                 {% for prenotazione in listaPrenotazioni %}
                 <tr>

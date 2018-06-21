@@ -68,7 +68,7 @@ class TestListaPrenotazioni(TestCase):
         # Per visualizzare la lista camere e' necessario loggarsi, si manda una richiesta POST con i dati
         response = self.client.post("/Login.html/", {"email": self.albergatore.email, "password": self.albergatore.password})
         self.assertTrue(response)
-        response = self.client.get("/Home/" + self.albergatore.id.__str__() + "/", follow=True)
+        response = self.client.get("/Home/" + (self.albergatore.id) + "/", follow=True)
 
         # Si controlla che la risposta contenga i dati degli delle prenotazioni, fatte agli hotel dell'albergatore loggato
         self.assertContains(response, self.prenotazione1.utente)

@@ -22,10 +22,6 @@
                     <button id="btnRegistrati" type="button" value="registrati" onclick="top.location.href='/signup'">  <b> Registrati </b> </button>
                     <button id="btnAccedi" type="button" value="accedi" onclick="top.location.href='/Login'">  <b> Accedi </b> </button>
                 </div>
-                <!--<div id="userImpostazioni">
-                    <a id="userImpostazioniC" href="Cookies.html">  Cookies </a>
-                    <a id="userImpostazioniA" href="Assistenza.html"> Assistenza </a>
-                </div>-->
 
             </nav>
         </div>
@@ -35,7 +31,7 @@
         <p id="testoPerCliente3"> I migliori hotel, pronti a proporti la loro camera per la tua vacanza. </p>
     </div>
     <div id="divRicerca">
-        <form action="" method="post">
+        <form method="post">
         {% csrf_token %}
             {{ form }}
             {% if msg %}
@@ -45,16 +41,6 @@
             <button id="btnCerca" type="submit"> <b> Cerca</b> </button>
         </form>
 
-    </div>
-    <div id="divRisultatoRicerca">
-        RISULTATI RICERCA QUI
-        <p> <!--(TODO::da decidere dove andrà) Dopo la selezione dell'hotel, la persona dovrà inserire i propri dati:--></p>
-        <form>
-            <label for="email"><b>Email</b></label> <br>
-            <input type="text"  name="email" required> <br>
-
-            <button type="submit"> Invia Prenotazione</button>
-        </form>
     </div>
     <div id="divSuggerimenti">
         <div id="postoConsUno">

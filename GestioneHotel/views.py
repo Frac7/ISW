@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals #Per lettere accentate...
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from GestioneHotel.forms import *
-from django.shortcuts import render, redirect
 import datetime
-
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 
 
@@ -20,7 +16,7 @@ def signup(request):
             nome = form.cleaned_data.get('nome')
             cognome = form.cleaned_data.get('cognome')
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
+            #user = authenticate(username=username, password=raw_password)
             # Una volta Registrato dovrebbe fare un login automatico
             #login(request, user)
             # Bisogna anche creare l'Albergatore
@@ -38,26 +34,35 @@ def signup(request):
 
 
 #Login
-def logout(request):
-    #TODO: django logout
+@login_required(login_url='/Login')
+def signout(request):
+    #Distrugge la sessione
+    logout(request)
     return redirect("/")
 
 
-def login(request):
+def signin(request):
     error = False
     if request.method == "POST":  # Useremo sempre la post per i form
         loginForm = LoginForm(request.POST)
         # Recupera il form e controlla che sia valido, se sì crea una camera
         if loginForm.is_valid():
-            #TODO: login django
             email = loginForm.cleaned_data['email']
-            if Albergatore.autorizzaAccesso(email, loginForm.cleaned_data['password']):
+            password = loginForm.cleaned_data['password']
+            # Autenticazione: chi è l'utente
+            user = authenticate(username=email, password=password)
+            #if Albergatore.autorizzaAccesso(email, loginForm.cleaned_data['password']):
+            if user != None:
                 id = 0
                 for albergatore in Albergatore.objects.filter(email=email):
                     id = albergatore.id
-                return redirect("/Home/" + id.__str__())
+                #Login utente
+                login(request, user)
+                return redirect("/Home/" + str(id))
             else:
                 error = True
+        else:
+            error = True
     loginForm = LoginForm()
     return render(request, "Login.html", {
         "form": loginForm,
@@ -66,9 +71,10 @@ def login(request):
 
 
 #Hotel: viste legate alla classe Hotel
-@login_required(login_url='/Login') #è da provare
+@login_required(login_url='/Login')
 #dettagli hotel e lista camere
 def dettaglioHotel(request, hotelID):
+    nessunCamera = False
     try:
         hotel = Hotel.objects.get(id=hotelID)
     except Hotel.DoesNotExist:
@@ -101,6 +107,8 @@ def dettaglioHotel(request, hotelID):
         for camera in lista:
             servizi[camera.id] = camera.listaServizi()
         aggiungiCameraForm = AggiungiCameraForm()
+        if len(lista) == 0:
+            nessunCamera = True
     else:
         lista = []
         servizi = {}
@@ -111,26 +119,13 @@ def dettaglioHotel(request, hotelID):
                       "hotel": hotel,
                       "camere": lista, #lista delle camere da scorrere in html
                         "servizi": servizi,
+                    "vuoto": nessunCamera,
         "form": aggiungiCameraForm
                   })
 #Albergatore
-def aggiungiAlbergatore(request):
-    if request.method== "POST":
-        registrazioneAlbergatore= RegistrazioneAlbergatore(request.POST)
-        if registrazioneAlbergatore.is_valid():
-            nuovoAlbergatore= Albergatore(nome=registrazioneAlbergatore.cleaned_data['nome'],
-                                          cognome=registrazioneAlbergatore.cleaned_data['cognome'],
-                                          email=registrazioneAlbergatore.cleaned_data['email'],
-                                          password=registrazioneAlbergatore.cleaned_data['password'])
-            nuovoAlbergatore.save()
-            return HttpResponse("Albergatore salvato")#what? copiato senza sapere cosa SIA
-        else:
-            registrazioneAlbergatore=RegistrazioneAlbergatore()
-        return render(request, "Registrazione.html", {"form" : registrazioneAlbergatore})
-
-
-
+@login_required(login_url='/Login')
 def listaHotel(request, albergatoreID):
+    nessunHotel = False
     try:
         albergatore = Albergatore.objects.get(id=albergatoreID)
     except Albergatore.DoesNotExist:
@@ -155,17 +150,20 @@ def listaHotel(request, albergatoreID):
     for hotel in Hotel.objects.all():
         if hotel.proprietario.__eq__(albergatore):
             listaHotel.append(hotel)
-            listaHotel.append(hotel.contaCamere())
-
+            listaHotel.append(len(hotel.listaCamere()))
+    if len(listaHotel) == 0:
+        nessunHotel = True
     return render(request,
                     "AggiungiHotel.html",{
                     'albergatoreID' : albergatore.id,
                     'listaHotel' : listaHotel,
-                    'form':aggiungiHotelForm
+                    'form':aggiungiHotelForm,
+                    'vuoto': nessunHotel
                     })
 
-
+@login_required(login_url='/Login')
 def prenotazionePerAlbergatore(request, albergatoreID):
+    nessunaPrenotazione = False
     try:
         albergatore=Albergatore.objects.get(id=albergatoreID)
     except Albergatore.DoesNotExist:
@@ -174,16 +172,19 @@ def prenotazionePerAlbergatore(request, albergatoreID):
     for prenotazione in Prenotazione.objects.all():
         if prenotazione.camera.hotel.proprietario.__eq__(albergatore):
             listaPrenotazioni.append(prenotazione)
+    if len(listaPrenotazioni) == 0:
+        nessunaPrenotazione = True
     return render(request,
                     "Home.html",{
             'albergatoreID': albergatoreID,
-                    'listaPrenotazioni':listaPrenotazioni
+                    'listaPrenotazioni':listaPrenotazioni,
+                    'vuoto': nessunaPrenotazione
                     })
 
-#Camera
-def disponibilita(request, cameraID, dal, al):
-    pass
-
+#TODO: 1) un utente loggato non deve poter accedere alle informazioni degli altri albergatori, si può aggiungere un piccolo
+#TODO: controllo (es. si tenta di accedere manualmente alla pagina prenotazioni di un albergatore con id diverso dal proprio)
+#TODO: 2) un utente loggato deve poter visualizzare questa pagina? se volessimo aggiunger il vincolo:
+#TODO: if user is authenticated then redirect to prenotazioni
 
 def Main(request):
     if request.method == "POST":
@@ -192,7 +193,6 @@ def Main(request):
 
         #se il form è correttamente compilato...
         if formRicerca.is_valid():
-
             citta=formRicerca.cleaned_data['citta']
             dataArrivo=formRicerca.cleaned_data['dataArrivo']
             dataPartenza = formRicerca.cleaned_data['dataPartenza']
@@ -212,7 +212,6 @@ def Main(request):
             camere=(Camera.objects.exclude(id__in=Prenotazione.objects.filter(checkin__lte=dataArrivo,checkout__gt=dataArrivo\
                     )).exclude(id__in=Prenotazione.objects.filter(checkin__lt=dataPartenza,checkout__gte=dataPartenza\
                     )).exclude(id__in=Prenotazione.objects.filter(checkin__gte=dataArrivo, checkout__lte=dataPartenza))).filter(postiLetto=posti).filter(hotel=Hotel.objects.filter(citta=citta))
-
             if len(camere)==0:
                 # se nessuna Camera è stata trovata...
                 msg="Nessuna Camera Trovata"

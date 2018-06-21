@@ -12,19 +12,22 @@
             <img id="logo" src="{% static 'img/LogoBooking.png' %}" alt="Logo" width="100" height="100">
             <h1 id="intLogo"> The Reception.com</h1>
         </div>
-        <p>Per procedere alla prenotazione della tua camera, inserisci il tuo indirizzo Email</p>
-        <p>Hotel Scelto: {{ nomeHotel }}</p>
-        <p>Camera: {{ numeroCamera }}</p>
-        <p>Posti letto: {{ postiLetto }}</p>
-        <p>Data di Arrivo: {{ arrivo }}</p>
-        <p>Data di Partenza: {{ partenza }}</p>
-        <div id="divRicerca">
-            <form action="PrenotazioneEffettuata/" method="post">
-            {% csrf_token %}
+        <br>
+        <div>
+            <p>Per procedere alla prenotazione della tua camera, inserisci il tuo indirizzo Email</p>
+            <p>Hotel Scelto: {{ nomeHotel }}</p>
+            <p>Camera: {{ numeroCamera }}</p>
+            <p>Posti letto: {{ postiLetto }}</p>
+            <p>Data di Arrivo: {{ arrivo }}</p>
+            <p>Data di Partenza: {{ partenza }}</p>
+            <div id="divRicerca">
+                <form action="PrenotazioneEffettuata/" method="post">
+                {% csrf_token %}
 
-                {{ form }}
-                <button id="btnPrenota" type="submit"> <b> Prenota</b> </button>
-            </form>
+                    {{ form }}
+                    <button id="btnPrenota" type="submit"> <b> Prenota</b> </button>
+                </form>
+            </div>
         </div>
     </header>
 </body>

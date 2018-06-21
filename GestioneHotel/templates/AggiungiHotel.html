@@ -53,7 +53,9 @@
         </form>
     </div>
     <div id="divHotelAggiunti">
-
+        {% if vuoto %}
+            <h2>Ancora nessun hotel aggiunto alla lista...</h2>
+        {% endif %}
         <h1>I tuoi Hotel</h1>
         <table>
             <tr>
