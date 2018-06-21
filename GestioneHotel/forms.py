@@ -20,7 +20,7 @@ class SignUpForm(UserCreationForm):
 class AggiungiCameraForm(forms.Form):
     numero = forms.CharField(label="Numero",max_length=15,required=True,widget=forms.TextInput(attrs={'id': 'campoCamera'}))
     elencoPosti = [(i, i) for i in range(1, 7)]
-    postiLetto = forms.ChoiceField(label="Posti Letto", choices=elencoPosti, widget={'id' : 'postiCamera'})
+    postiLetto = forms.ChoiceField(label="Posti Letto", choices=elencoPosti, widget=forms.NumberInput(attrs={'id' : 'postiCamera'}))
     servizio1 = forms.BooleanField(required=False,label="TV",widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))
     servizio2 = forms.BooleanField(required=False,label="Aria condizionata",widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))
     servizio3 = forms.BooleanField(required=False,label="Frigo bar",widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))

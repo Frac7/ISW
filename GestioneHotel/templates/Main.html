@@ -19,7 +19,7 @@
         <div id="userForm">
             <nav>
                 <div id="userLogin">
-                    <button id="btnRegistrati" type="button" value="registrati" onclick="top.location.href='/Registrazione'">  <b> Registrati </b> </button>
+                    <button id="btnRegistrati" type="button" value="registrati" onclick="top.location.href='/signup'">  <b> Registrati </b> </button>
                     <button id="btnAccedi" type="button" value="accedi" onclick="top.location.href='/Login'">  <b> Accedi </b> </button>
                 </div>
                 <!--<div id="userImpostazioni">
@@ -35,7 +35,7 @@
         <p id="testoPerCliente3"> I migliori hotel, pronti a proporti la loro camera per la tua vacanza. </p>
     </div>
     <div id="divRicerca">
-        <form action="ListaCamereDisponibili/" method="post">
+        <form action="" method="post">
         {% csrf_token %}
             {{ form }}
             {% if msg %}
