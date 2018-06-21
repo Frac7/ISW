@@ -213,6 +213,7 @@ def Main(request):
         for albergatore in Albergatore.objects.filter(email=request.user):
             id = albergatore.id
         return redirect("/Home/"+str(id))
+
     if request.method == "POST":
         # Da Main se clic su cerca...
         formRicerca = FormRicerca(request.POST)
@@ -224,21 +225,23 @@ def Main(request):
             dataPartenza = formRicerca.cleaned_data['dataPartenza']
             posti = formRicerca.cleaned_data['posti']
 
+
             # Controllo che le date non siano precedenti alla data di oggi
             if dataArrivo < datetime.date.today() or dataArrivo < datetime.date.today():
                 msg="Attenzione: le date di arrivo e di partenza non possono essere precedenti ad oggi"
                 return render(request, "Main.html", {'form': formRicerca, 'msg': msg})
 
             # Controllo che la data di partenza sia successiva a quella di arrivo
-            if dataArrivo > dataPartenza:
+            if dataArrivo >= dataPartenza:
                 msg="Attenzione: le date di partenza deve essere posteriore a quella di arrivo"
                 return render(request, "Main.html", {'form': formRicerca, 'msg': msg})
 
             # recupero le camere libere
-            camere=(Camera.objects.exclude(id__in=Prenotazione.objects.filter(checkin__lte=dataArrivo,checkout__gt=dataArrivo\
+            camerelibere=(Camera.objects.exclude(id__in=Prenotazione.objects.filter(checkin__lte=dataArrivo,checkout__gt=dataArrivo\
                     )).exclude(id__in=Prenotazione.objects.filter(checkin__lt=dataPartenza,checkout__gte=dataPartenza\
-                    )).exclude(id__in=Prenotazione.objects.filter(checkin__gte=dataArrivo, checkout__lte=dataPartenza))).filter(postiLetto=posti).filter(hotel=Hotel.objects.filter(citta=citta))
-            if len(camere)==0:
+                    )).exclude(id__in=Prenotazione.objects.filter(checkin__gte=dataArrivo, checkout__lte=dataPartenza))).filter(postiLetto=posti).filter(hotel__in=Hotel.objects.filter(citta=citta))
+
+            if len(camerelibere)==0:
                 # se nessuna Camera è stata trovata...
                 msg="Nessuna Camera Trovata"
                 # riporta a Main.html con un messaggio per la visualizzazione di un messaggio
@@ -247,7 +250,7 @@ def Main(request):
                 # se almeno una camera è stata trovata
                 servizi=Servizio.objects.all()
                 serviziDisponibili=ServiziDisponibili.objects.all()
-                return render(request,"ListaCamereDisponibili.html",{'camere':camere,'serviziDisponibili':serviziDisponibili,'servizi':servizi,'dataArrivo':dataArrivo,'dataPartenza':dataPartenza})
+                return render(request,"ListaCamereDisponibili.html",{'camere':camerelibere,'serviziDisponibili':serviziDisponibili,'servizi':servizi,'dataArrivo':dataArrivo,'dataPartenza':dataPartenza})
     else:
         return render(request, "Main.html", {'form': FormRicerca})
 
