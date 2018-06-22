@@ -175,7 +175,8 @@ class TestHotel(TestCase):
         #Creazione altro user
         self.albergatore2 = Albergatore(nome="unNuovo", cognome="Albergatore", email="nuovoAlbergatore@email.com", password=password)
         self.albergatore2.save()
-        user2 = User(username="nuovoAlbergatore@email.com", password=password)
+        user2 = User(username="nuovoAlbergatore@email.com")
+        user2.set_password(password)
         user2.save()
         # Creazione singolo servizio: nome e descrizione
         servizio = Servizio(nome="TV", descrizioneServizio="televisione")
@@ -279,6 +280,12 @@ class TestHotel(TestCase):
         self.assertContains(response, "101")
         self.assertContains(response, "1")
 
+    def testViewNessunaCamera(self):
+        #L'albergatore che cerca di accedere al suo hotel senza camera visualizza un messaggio apposito
+        self.client.post("/Login/", {"email": self.albergatore2.email, "password": self.albergatore2.password},
+                         follow=True)
+        response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.hotel2.id) + "/", follow=True)
+        self.assertContains(response, "nessuna camera")
 class TestLogin(TestCase):
     def setUp(self):
         #Creazione primo user

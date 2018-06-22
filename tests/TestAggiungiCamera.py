@@ -72,12 +72,12 @@ class TestAggiungiCamera(TestCase):
         self.assertContains(response, len(self.hotel.listaCamere()))
         #Da qui si sceglie l'hotel al quale aggiungere la camera
         response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/")
-        self.assertContains(response, self.camera.numero)
-        self.assertContains(response, self.camera.postiLetto)
-        for servizioDisponibile in self.camera.listaServizi():
-            for servizio in servizioDisponibile:
-                self.assertContains(response, servizio.nome)
-                self.assertContains(response, servizio.descrizioneServizio)
+        response = self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/",
+                                    {"numero": "327", "postiLetto": "4", "serivizio1": True, "serivizio2": False,
+                                     "serivizio3": False}, follow=True)
+        self.assertContains(response, "327")
+        self.assertContains(response, "4")
+        self.assertContains(response, "TV")
 
 if __name__ == "__main__":
     unittest.main()
