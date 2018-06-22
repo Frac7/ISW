@@ -8,19 +8,22 @@ class Albergatore(models.Model):
     email = models.EmailField(max_length=50,default="")
     password = models.CharField(max_length=32,default="")
 
-    @staticmethod #col login di django questo metodo non serve piu'
-    def autorizzaAccesso(email, password):
-        for albergatore in Albergatore.objects.all():
-            if email == albergatore.email and password == albergatore.password:
-                return True
-            else:
-                return False
-
+    #Lista degli Hotel di un Albergatore
     def listaHotel(self):
         listaHotel = []
         for hotel in Hotel.objects.filter(proprietario=self.id):
             listaHotel.append(hotel)
         return listaHotel
+    #Lista delle prenotazioni effettuate sulle camere di un Hotel di uin albergatore
+    def prenotazioniPerAlbergatore(self):
+        listaPrenotazioni=[]
+        for prenotazione in Prenotazione.objects.all():
+            if prenotazione.camera.hotel.proprietario == self:
+                listaPrenotazioni.append(prenotazione)
+        return listaPrenotazioni
+
+    def __unicode__(self):
+        return "%s, %s, %s" % (self.nome, self.cognome, self.email)
 
     def prenotazioniPerAlbergatore(self):
         listaPrenotazioni=[]

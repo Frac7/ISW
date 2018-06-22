@@ -10,25 +10,59 @@ import unittest
 
 # Test Unitari.
 
-class ModelTest(TestCase):
-    # Creazione di Un Hotel
+class TestAlbergatore(TestCase):
     def setUp(self):
-        albergatore1 = Albergatore(nome="Pino", cognome="Pipetta", email="pinopipetta@outlook.com", password="ninnito42")
-        albergatore1.save()
-        albergatore2 = Albergatore(nome="Pippo", cognome="Pluto", email="pippopluto@outlook.com", password="cosimo83")
-        albergatore2.save()
-        indirizzo = Indirizzo(via="Via Lombardia", numero="32")
-        indirizzo.save()
-        self.hotel1=Hotel(nome="Hilton", descrizione="Il Migliore!", citta="Cagliari", indirizzo=indirizzo, proprietario=albergatore1)
+        email = "pinopipetta@outlook.com"
+        password = "ninnito42"
+        #Definisco degli elementi che salvo nel DB temporaneo per poter effettuare i test
+        self.albergatore1 = Albergatore(nome="Pino", cognome="Pipetta", email=email,
+                                   password=password)
+        self.albergatore1.save()
+        self.albergatore2 = Albergatore(nome="Pippo", cognome="Pluto", email="pippopluto@outlook.com", password="cosimo83")
+        self.albergatore2.save()
+        indirizzo1 = Indirizzo(via="Via Trincea Delle Frasche", numero="13")
+        indirizzo1.save()
+        indirizzo2 = Indirizzo(via="Via Inferno", numero="667")
+        indirizzo2.save()
+        self.hotel1 = Hotel(nome="Park Rangers", descrizione="Chuck Norris Approved", citta="Cagliari", proprietario= self.albergatore1,
+                      indirizzo=indirizzo1)
         self.hotel1.save()
-        self.hotel2=Hotel(nome="Hilton", descrizione="Il Migliore!", citta="Roma", indirizzo=indirizzo, proprietario=albergatore2)
+        self.hotel2 = Hotel(nome="The Hell Resort", descrizione="Bello ma Brutto", citta="Gerusalemme",
+                      proprietario=self.albergatore2,
+                      indirizzo=indirizzo2)
         self.hotel2.save()
-    # Conteggio Hotels
-    def testCountHotels(self):
-        self.assertEqual(len(Hotel.objects.all()),2)
+        self.camera = Camera(hotel=self.hotel1, numero=1408, postiLetto=2)
+        self.camera.save()
+        servizioTV = Servizio(nome="TV", descrizioneServizio="SKY")
+        servizioTV.save()
+        TVSky = ServiziDisponibili(camera=self.camera, servizio=servizioTV)
+        TVSky.save()
+        self.prenotazione = Prenotazione(camera=self.camera, utente="franchinodj@live.it", checkin=datetime.now(),
+                                 checkout=datetime.now())
+        self.prenotazione.save()
+        self.client = Client()
 
-    def testCountAlbergatores(self):
-        self.assertEqual(len(Albergatore.objects.all()), 2)
+    def testAlbergatore(self):
+        self.assertEqual(len(Albergatore.objects.all()), 2) #controllo che gli albergatori siano 2
+        self.assertEqual(self.albergatore1, self.hotel1.proprietario, "Albergatore assegnato in maniera errata") #controllo che l'hotel 1 abbia come albergatore albergatore1
+
+
+    def testListaPrenotazioni(self):
+        self.assertEqual(len(self.albergatore1.prenotazioniPerAlbergatore()), 1) #controllo che prenotazioni albergatore restituisca esattamente 1 elemento
+
+    def testListaHotel(self):
+        self.assertEqual(len(self.albergatore1.listaHotel()), 1) #controllo che lista hotel restituisca esattamente un solo elemento
+
+    def testViewListaHotel(self):
+        self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.albergatore1.password}, follow=True)
+        response = self.client.post("/AggiungiHotel/" + str(self.albergatore1.id), follow=True)
+        self.assertContains(response, self.hotel1.nome) #controllo che nella pagina ci sia il nome dell'hotel1
+    def testViewListaPrenotazioni(self):
+        self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.albergatore1.password}, follow=True)
+
+        response = self.client.post("/Home/" + str(self.albergatore1.id), follow=True)
+        print (response)
+        self.assertContains(response, self.prenotazione.camera.numero) #controllo che nella pagina ci sia il numero della camera prenotata
 
 class TestPrenotazioni(TestCase):
     def setUp(self):
