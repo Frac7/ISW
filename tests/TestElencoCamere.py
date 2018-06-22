@@ -1,4 +1,5 @@
 # Test di Accettazione per la Uesr Story Elenco Camera
+from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from GestioneHotel.models import *
 import unittest
@@ -9,6 +10,10 @@ class TestElencoCamere(TestCase):
         password = "password"
         self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
         self.albergatore.save()
+
+        self.user = User(username=email)
+        self.user.set_password(password)
+        self.user.save()
 
         # Creazione indirizzi per gli hotel
         indirizzo1 = Indirizzo(via='Via Trieste', numero='14')

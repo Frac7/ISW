@@ -25,16 +25,6 @@ class Albergatore(models.Model):
     def __unicode__(self):
         return "%s, %s, %s" % (self.nome, self.cognome, self.email)
 
-    def prenotazioniPerAlbergatore(self):
-        listaPrenotazioni=[]
-        for prenotazione in Prenotazione.objects.all():
-            if prenotazione.camera.hotel.proprietario == self:
-                listaPrenotazioni.append(prenotazione)
-        return listaPrenotazioni
-
-    def __unicode__(self):
-        return "%s, %s, %s" % (self.nome, self.cognome, self.email)
-
 class Indirizzo(models.Model):
     via = models.CharField(max_length=50,default="")
     numero = models.CharField(max_length=5,default="")

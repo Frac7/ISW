@@ -1,4 +1,5 @@
 #test di accettazione per la user story, visualizza la lista prenotazioni
+from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from GestioneHotel.models import *
 import unittest
@@ -11,6 +12,10 @@ class TestListaPrenotazioni(TestCase):
         password = "password"
         self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
         self.albergatore.save()
+
+        self.user = User(username=email)
+        self.user.set_password(password)
+        self.user.save()
 
         #Creazione indirizzi per gli hotel
         indirizzo1 = Indirizzo(via='Via Trieste', numero='14')
@@ -29,13 +34,12 @@ class TestListaPrenotazioni(TestCase):
         self.hotel2.save()
         self.listaHotel.append(self.hotel2)
 
-        #assert Albergatore.autorizzaAccesso(albergatore.getEmail(), albergatore.getPassword())
-
     #Una volta ch'e' stato effettuato il login, l'untente tramite il menu accede alla lista degli hotel che li appartengono
     #          e controlla se ci sono presenti tutti
 
     def testListaHotelPosseduti(self):
         self.assertEqual(len(Hotel.objects.all()), 2)
+        self.assertEqual(len(Hotel.objects.filter(proprietario=self.albergatore)), 2)
         self.assertEqual(self.listaHotel[0], self.hotel1, "Hotel 1 non e' presente nella lista")
         self.assertEqual(self.listaHotel[1], self.hotel2, "Hotel 2 non e' presente nella lista")
 
@@ -45,37 +49,11 @@ class TestListaPrenotazioni(TestCase):
                          {"email": self.albergatore.email, "password": self.albergatore.password},
                          follow=True)
         # Da qui si passa alla lista hotel
-        response = self.client.get("/AggiungiHotel/" + str(self.albergatore.id) + "/")
+        response = self.client.get("/AggiungiHotel/" + str(self.albergatore.id) + "/", follow=True)
 
         # Si controlla che la risposta contenga i dati degli hotel posseduti dall'albergatore loggato
         self.assertContains(response, self.hotel1.nome)
-        #self.assertContains(response, self.hotel1.descrizione) #questa non funziona perche' questa informazione non viene stampata nel template (ma dovrebbe essere inserita)
-        #self.assertContains(response, self.hotel1.citta) #questa non funziona perche' questa informazione non viene stampata nel template (ma dovrebbe essere inserita)
-        #for indirizzo in self.hotel1.indirizzo: #indirizzo e' un oggetto, non hai bisogno di iterare
-        # indirizzo = self.hotel1.indirizzo #questa dovrebbe essere inserita nel template
-        # self.assertContains(response, indirizzo.via) #questa non funziona perche' questa informazione non viene stampata nel template (ma dovrebbe essere inserita)
-        # self.assertContains(response, indirizzo.numero) #questa non funziona perche' questa informazione non viene stampata nel template (ma dovrebbe essere inserita)
-        #for albergatore in self.hotel1.proprietario: #anche albergatore e' un oggetto, non hai bisogno di iterare
-        # albergatore = self.hotel1.proprietario #questa roba tra l'altro non e' nemmeno prevista per la stampa
-        # self.assertContains(response, albergatore.nome) #questa non funziona perche' questa informazione non viene stampata nel template
-        # self.assertContains(response, albergatore.cognome) #questa non funziona perche' questa informazione non viene stampata nel template
-        # self.assertContains(response, albergatore.email) #questa non funziona perche' questa informazione non viene stampata nel template
-        # self.assertContains(response, albergatore.password) #questa non funziona perche' questa informazione non viene stampata nel template
-
         self.assertContains(response, self.hotel2.nome)
-        # self.assertContains(response, self.hotel2.descrizione) #questa non funziona perche' questa informazione non viene stampata nel template
-        # self.assertContains(response, self.hotel2.citta) #questa non funziona perche' questa informazione non viene stampata nel template (ma dovrebbe essere inserita)
-        # for indirizzo in self.hotel2.indirizzo: #indirizzo e' un oggetto, non hai bisogno di iterare
-        # indirizzo = self.hotel1.indirizzo #questa dovrebbe essere inserita nel template
-        # self.assertContains(response, indirizzo.via) #questa non funziona perche' questa informazione non viene stampata nel template (ma dovrebbe essere inserita)
-        # self.assertContains(response, indirizzo.numero) #questa non funziona perche' questa informazione non viene stampata nel template (ma dovrebbe essere inserita)
-        # for albergatore in self.hotel2.proprietario: #anche albergatore e' un oggetto, non hai bisogno di iterare
-        # albergatore = self.hotel1.proprietario #questa roba tra l'altro non e' nemmeno prevista per la stampa
-        # self.assertContains(response, albergatore.nome) #questa non funziona perche' questa informazione non viene stampata nel template
-        # self.assertContains(response, albergatore.cognome) #questa non funziona perche' questa informazione non viene stampata nel template
-        # self.assertContains(response, albergatore.email) #questa non funziona perche' questa informazione non viene stampata nel template
-        # self.assertContains(response, albergatore.password) #questa non funziona perche' questa informazione non viene stampata nel template
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -18,8 +18,14 @@ class TestAlbergatore(TestCase):
         self.albergatore1 = Albergatore(nome="Pino", cognome="Pipetta", email=email,
                                    password=password)
         self.albergatore1.save()
+        self.user1 = User(username=email)
+        self.user1.set_password(password)
+        self.user1.save()
         self.albergatore2 = Albergatore(nome="Pippo", cognome="Pluto", email="pippopluto@outlook.com", password="cosimo83")
         self.albergatore2.save()
+        self.user2 = User(username="pippopluto@outlook.com")
+        self.user2.set_password("cosimo83")
+        self.user2.save()
         indirizzo1 = Indirizzo(via="Via Trincea Delle Frasche", numero="13")
         indirizzo1.save()
         indirizzo2 = Indirizzo(via="Via Inferno", numero="667")
@@ -53,15 +59,14 @@ class TestAlbergatore(TestCase):
     def testListaHotel(self):
         self.assertEqual(len(self.albergatore1.listaHotel()), 1) #controllo che lista hotel restituisca esattamente un solo elemento
 
-    def testViewListaHotel(self):
+    def testViewListaHotel(self): #qui il problema è che in setup non crei l'user django
         self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.albergatore1.password}, follow=True)
-        response = self.client.post("/AggiungiHotel/" + str(self.albergatore1.id), follow=True)
+        response = self.client.post("/AggiungiHotel/" + str(self.albergatore1.id) + "/", follow=True)
         self.assertContains(response, self.hotel1.nome) #controllo che nella pagina ci sia il nome dell'hotel1
     def testViewListaPrenotazioni(self):
         self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.albergatore1.password}, follow=True)
 
         response = self.client.post("/Home/" + str(self.albergatore1.id), follow=True)
-        print (response)
         self.assertContains(response, self.prenotazione.camera.numero) #controllo che nella pagina ci sia il numero della camera prenotata
 
 class TestPrenotazioni(TestCase):

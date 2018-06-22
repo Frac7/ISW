@@ -1,4 +1,5 @@
 #test di accettazione per la user story, visualizza la lista prenotazioni
+from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from datetime import date
 from GestioneHotel.models import *
@@ -12,6 +13,10 @@ class TestListaPrenotazioni(TestCase):
         password = "password"
         self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
         self.albergatore.save()
+
+        self.user = User(username=email)
+        self.user.set_password(password)
+        self.user.save()
 
         # Creazione indirizzi per gli hotel
         indirizzo1 = Indirizzo(via='Via Trieste', numero='14')
@@ -74,7 +79,7 @@ class TestListaPrenotazioni(TestCase):
         #il template specifica solo numero e hotel
         self.assertContains(response, self.prenotazione1.camera.numero)
         self.assertContains(response, self.prenotazione1.camera.hotel.nome)
-        #per ora ho aggiunto la stampa di questi attributi perche', non capisco come, in home.html la data viene formattata
+
         self.assertContains(response, self.prenotazione1.checkin.day)
         self.assertContains(response, self.prenotazione1.checkout.year)
 
@@ -82,7 +87,7 @@ class TestListaPrenotazioni(TestCase):
         #il template specifica solo numero e hotel
         self.assertContains(response, self.prenotazione2.camera.numero)
         self.assertContains(response, self.prenotazione2.camera.hotel.nome)
-        #per ora ho aggiunto la stampa di questi attributi perche', non capisco come, in home.html la data viene formattata
+
         self.assertContains(response, self.prenotazione2.checkin.day)
         self.assertContains(response, self.prenotazione2.checkout.year)
 
