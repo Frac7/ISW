@@ -57,12 +57,15 @@ class FormRicerca(forms.Form):
 
     #recupero l'elenco delle citta dagli hotel
     elencoCitta = [(hotel.citta, hotel.citta) for hotel in Hotel.objects.order_by('citta')]
-    # elimino i duplicati dalla lista
-    elencoCitta = list(set(elencoCitta))
-    #ordino la lista
-    elencoCitta.sort()
-    # html select della citta dell'elenco delle citta disponibili
-    citta=forms.ChoiceField(label="Destinazione", widget=forms.Select(attrs={'id':'ricercaCitta'}), choices=elencoCitta)
+    if len(elencoCitta)>0:
+        # elimino i duplicati dalla lista
+        elencoCitta = list(set(elencoCitta))
+        #ordino la lista
+        elencoCitta.sort()
+        # html select della citta dell'elenco delle citta disponibili
+        citta=forms.ChoiceField(label="Destinazione", widget=forms.Select(attrs={'id':'ricercaCitta'}), choices=elencoCitta, required=False)
+    else:
+        citta = forms.CharField(widget=forms.TextInput(attrs={'id':'ricercaCitta'}))
     # input data arrivo
     dataArrivo = forms.DateField(label="Arrivo",widget=forms.SelectDateWidget(attrs={'id':'ricercaDataIn'}))
     #input data partenza

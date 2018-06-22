@@ -224,6 +224,7 @@ def prenotazionePerAlbergatore(request, albergatoreID):
                     })
 
 def Main(request):
+
     if request.user.is_authenticated: #Se l'utente ha fatto login
         id = Albergatore.objects.all().get(email=request.user).id  # Si recupera l'id albergatore con l'email
         return redirect("/Home/"+str(id)) #Viene rimandato alla sua home (in teoria non sono previste prenotazioni per gli utenti loggati)
@@ -246,7 +247,7 @@ def Main(request):
 
             # Controllo che la data di partenza sia successiva a quella di arrivo
             if dataArrivo >= dataPartenza:
-                msg="Attenzione: le date di partenza deve essere posteriore a quella di arrivo"
+                msg="Attenzione: la data di partenza deve essere successiva a quella di arrivo"
                 return render(request, "Main.html", {'form': formRicerca, 'msg': msg})
 
             # recupero le camere libere
@@ -264,6 +265,12 @@ def Main(request):
                 servizi=Servizio.objects.all()
                 serviziDisponibili=ServiziDisponibili.objects.all()
                 return render(request,"ListaCamereDisponibili.html",{'camere':camerelibere,'serviziDisponibili':serviziDisponibili,'servizi':servizi,'dataArrivo':dataArrivo,'dataPartenza':dataPartenza})
+        else:
+            # se nessuna Camera è stata trovata...
+            msg = "Attenzione: Parametri di ricerca errati."
+            # riporta a Main.html con un messaggio per la visualizzazione di un messaggio
+            return render(request, "Main.html", {'form': formRicerca, 'msg': msg})
+
     else:
         return render(request, "Main.html", {'form': FormRicerca})
 

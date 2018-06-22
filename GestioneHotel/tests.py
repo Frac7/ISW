@@ -72,51 +72,146 @@ class TestPrenotazioni(TestCase):
         albergatore.save()
 
         # Creazione indirizzo (via, numero)
-        indirizzo=Indirizzo(via="Via Berlino",numero="12")
+        self.indirizzo=Indirizzo(via="Via Berlino",numero="12")
         # Salvataggio nel db temporaneo
-        indirizzo.save()
+        self.indirizzo.save()
+
+
+        self.citta="Cagliari"
 
         # Creazione hotel (nome, descrizione, citta, proprietario, indirizzo)
-        hotel=Hotel(nome="Hilton",descrizione="Il Migliore",citta="Cagliari",proprietario=albergatore,indirizzo=indirizzo)
+        self.hotel=Hotel(nome="Hilton",descrizione="Il Migliore",citta=self.citta,proprietario=albergatore,indirizzo=self.indirizzo)
         # Salvataggio nel db temporaneo
-        hotel.save()
+        self.hotel.save()
 
-        # Creazione hotel (hotel, numero, postiletto)
-        self.camera=Camera(hotel=hotel,numero=303,postiLetto=3)
+        # Creazione Camera (hotel, numero, postiletto)
+        self.camera=Camera(hotel=self.hotel,numero=303,postiLetto=3)
         # Salvataggio nel db temporaneo
         self.camera.save()
 
         # Creazione servizio1 (nome, descrizioneservizio)
-        tv=Servizio(nome="TV",descrizioneServizio="Satellitare")
+        self.tv=Servizio(nome="TV",descrizioneServizio="Satellitare")
         # Salvataggio nel db temporaneo
-        tv.save()
+        self.tv.save()
         # Creazione servizio1 (nome, descrizioneservizio)
-        fb=Servizio(nome="FB",descrizioneServizio="Frigo Bar")
+        self.fb=Servizio(nome="FB",descrizioneServizio="Frigo Bar")
         # Salvataggio nel db temporaneo
-        fb.save()
+        self.fb.save()
 
         #Creazione servizio tv disponibile per la camera (camera,servizio)
-        serviziotv=ServiziDisponibili(camera=self.camera,servizio=tv)
+        self.serviziotv=ServiziDisponibili(camera=self.camera,servizio=self.tv)
         # Salvataggio nel db temporaneo
-        serviziotv.save()
+        self.serviziotv.save()
         # Creazione servizio frigo bar disponibile per la camera (camera,servizio)
-        serviziofb = ServiziDisponibili(camera=self.camera, servizio=fb)
+        self.serviziofb = ServiziDisponibili(camera=self.camera, servizio=self.fb)
         # Salvataggio nel db temporaneo
-        serviziofb.save()
+        self.serviziofb.save()
 
+        # Creazione di un utente che prenota la camera
+        self.utente = "email@dominio.com"
+
+        # Imposto le date di checkin e checkout
+        self.arrivo=date(2019,1,1)
+        self.partenza=date(2019,1,10)
         # Creazione prenotazione della camera (camera, utente,checkin,checkout)
-        self.prenotazione=Prenotazione(camera=self.camera,utente="email@dominio",checkin=datetime.now(),checkout=datetime.now())
+        self.prenotazione=Prenotazione(camera=self.camera,utente=self.utente,checkin=self.arrivo,checkout=self.partenza)
         # Salvataggio nel db temporaneo
         self.prenotazione.save()
+        self.oggi=datetime.today()
+        self.ieri=self.oggi - timedelta(days=1)
+        # Inizializzazione del client
+        self.client=Client()
 
     def testPrenotazione(self):
         # Controlla che la prenotazione sia stata inserita
         self.assertEqual(len(Prenotazione.objects.all()), 1)
+        # seleziono la prenotazione salvata
         prenotazione = Prenotazione.objects.all().get(id=self.prenotazione.id)
         # Controlla che l'utente della prenotazione sia quello corretto
-        self.assertEqual(prenotazione.utente,"email@dominio")
+        self.assertEqual(prenotazione.utente,self.utente)
         #Controlla che la camera della prenotazione sia quella corretta
         self.assertEqual(prenotazione.camera, self.camera)
+        # Controlla che l'hotel della prenotazione sia quello corretto
+        self.assertEqual(prenotazione.camera.hotel, self.hotel)
+        # Controlla che la data di checkin della prenotazione sia quella corretta
+        self.assertEqual(prenotazione.checkin, self.arrivo)
+        # Controlla che la data di checkout della prenotazione sia quella corretta
+        self.assertEqual(prenotazione.checkout, self.partenza)
+
+    def testViewsMainCameraTrovata(self):
+
+        # Con date che non si sovrappongono a quelle in cui la camera è già stata prenotata
+        response = self.client.post("/",{"citta": self.citta,
+                "dataArrivo_day": 11,
+                "dataArrivo_month": 1,
+                "dataArrivo_year": 2019,
+                "dataPartenza_day": 20,
+                "dataPartenza_month": 1,
+                "dataPartenza_year": 2019,
+                "posti":self.camera.postiLetto})
+        # Risposta HTTP Ok
+        self.assertEqual(response.status_code,200)
+        # Dopo aver effettuato la ricerca la pagina che risulta deve contenere  i dettagli della camera trovata:
+        # Il nome dell'hotel
+        self.assertContains(response, self.camera.hotel.nome)
+        # Il numero della camera
+        self.assertContains(response, self.camera.numero)
+        # Il numero dei posti letto
+        self.assertContains(response, self.camera.postiLetto)
+        # Il nome dei servizi
+        for servizi in self.camera.listaServizi():
+            for servizio in servizi:
+                self.assertContains(response, servizio.nome)
+
+    def testViewsMainCameraOccupata(self):
+
+        # Con date che si sovrappongono a quelle in cui la camera è già stata prenotata, nessuna camera deve essere trovata
+        response = self.client.post("/",{"citta": self.citta,
+                "dataArrivo_day": 9,
+                "dataArrivo_month": 1,
+                "dataArrivo_year": 2019,
+                "dataPartenza_day": 20,
+                "dataPartenza_month": 1,
+                "dataPartenza_year": 2019,
+                "posti":self.camera.postiLetto})
+        # Risposta HTTP Ok
+        self.assertEqual(response.status_code,200)
+        # Dopo aver effettuato la ricerca la pagina che risulta deve contenere la stringa "Nessuna Camera Trovata":
+        self.assertContains(response, "Nessuna Camera Trovata")
+
+    def testViewsMainCameraDatePrecedentiAdOggi(self):
+
+        # Con date non valide deve essere visualizzato un messaggio opportuno:
+        # Nel caso in cui la data di arrivo o di partenza sia precedente alla data corrente:
+        response = self.client.post("/",{"citta": self.citta,
+                "dataArrivo_day": self.ieri.strftime("%d"),
+                "dataArrivo_month": self.ieri.strftime("%m"),
+                "dataArrivo_year": self.ieri.strftime("%Y"),
+                "dataPartenza_day": self.oggi.strftime("%d"),
+                "dataPartenza_month": self.oggi.strftime("%m"),
+                "dataPartenza_year": self.oggi.strftime("%Y"),
+                "posti":self.camera.postiLetto})
+        # Risposta HTTP Ok
+        self.assertEqual(response.status_code,200)
+        # Dopo aver effettuato la ricerca la pagina che risulta deve contenere la stringa "non possono essere precedenti ad oggi":
+        self.assertContains(response, "non possono essere precedenti ad oggi")
+
+    def testViewsMainCameraDateNonCongrue(self):
+        # Nel caso in cui la data di partenza sia precedente alla data di arrivo:
+        fradiecigiorni=self.oggi + timedelta(days=10)
+        response = self.client.post("/",{"citta": self.citta,
+                "dataArrivo_day": fradiecigiorni.strftime("%d"),
+                "dataArrivo_month": fradiecigiorni.strftime("%m"),
+                "dataArrivo_year": fradiecigiorni.strftime("%Y"),
+                "dataPartenza_day": self.oggi.strftime("%d"),
+                "dataPartenza_month": self.oggi.strftime("%m"),
+                "dataPartenza_year": self.oggi.strftime("%Y"),
+                "posti":self.camera.postiLetto})
+        # Risposta HTTP Ok
+        self.assertEqual(response.status_code,200)
+        # Dopo aver effettuato la ricerca la pagina che risulta deve contenere la stringa "la data di partenza deve essere successiva a quella di arrivo":
+        self.assertContains(response, "la data di partenza deve essere successiva a quella di arrivo")
+
 
 class TestCamera(TestCase):
     def setUp(self):
@@ -417,4 +512,3 @@ class TestLogin(TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
