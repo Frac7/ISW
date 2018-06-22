@@ -14,12 +14,12 @@
         </div>
         <br>
         <div>
-            <p>Per procedere alla prenotazione della tua camera, inserisci il tuo indirizzo Email</p>
-            <p>Hotel Scelto: {{ nomeHotel }}</p>
-            <p>Camera: {{ numeroCamera }}</p>
-            <p>Posti letto: {{ postiLetto }}</p>
-            <p>Data di Arrivo: {{ arrivo }}</p>
-            <p>Data di Partenza: {{ partenza }}</p>
+            <b><p>Per procedere alla prenotazione della tua camera, inserisci il tuo indirizzo Email</p></b>
+            <p><b>Hotel Scelto:</b> {{ nomeHotel }}</p>
+            <p><b>Camera:</b> {{ numeroCamera }}</p>
+            <p><b>Posti letto:</b> {{ postiLetto }}</p>
+            <p><b>Data di Arrivo:</b> {{ arrivo }}</p>
+            <p><b>Data di Partenza:</b> {{ partenza }}</p>
             <div id="divRicerca">
                 <form action="PrenotazioneEffettuata/" method="post">
                 {% csrf_token %}
