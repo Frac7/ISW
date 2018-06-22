@@ -49,20 +49,19 @@
          <form method="post">
              {% csrf_token %}
              {{ form.as_p }}
-         <button type="submit" value="Aggiungi"> Aggiungi</button>
+         <button id="btnAggiungiHotelNuovo" type="submit" value="Aggiungi"> Aggiungi</button>
         </form>
     </div>
     <div id="divHotelAggiunti">
         <h1 id="intestazioneAggiungiHotel"> Qui, trovi gli hotel che possiedi e quante camere ha ciascun Hotel.</h1>
         <p id="testoPerCliente4"> Così puoi tener d'occhio sempre se c'è tutto.</p>
         {% if vuoto %}
--            <h2 id="errore">Ancora nessun hotel aggiunto alla lista...</h2>
--        {% endif %}
--        <h1>I tuoi Hotel</h1>
+            <h2 id="errore">Ancora nessun hotel aggiunto alla lista...</h2>
+        {% endif %}
         <table>
             <tr>
                 <th> Nome Hotel</th>
-                <td>Numero Camere</td>
+                <th>Numero Camere</th>
             </tr>
         {% for hotel in listaHotel %}
 

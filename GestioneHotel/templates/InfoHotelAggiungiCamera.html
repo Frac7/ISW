@@ -40,12 +40,11 @@
             </nav>
         </div>
     </header>
+    <img id="hotel" src="{% static '/img/hotel.png' %}" alt="Logo" width="100" height="100">
     <div id="infoHotel">
-        <ul>
-            <li><b>Nome:</b> {{hotel.nome}}</li>
-            <li><b>Descrizione: </b> {{hotel.descrizione}}</li>
-            <li><b>Indirizzo: </b>{{hotel.indirizzo.via}}, {{hotel.indirizzo.numero}}, {{hotel.citta}}</li>
-        </ul>
+        <div id="infoHotelNome">         <b id="label1"> Nome: </b> {{hotel.nome}}  </div>
+        <div id="infoHotelDescrizione">  <b id="label2"> Descrizione:</b> {{hotel.descrizione}} </div>
+        <div id="infoHotelIndirizzo">    <b id="label3"> Indirizzo:  </b> {{hotel.indirizzo.via}}, {{hotel.indirizzo.numero}}, {{hotel.citta}} </div>
     </div>
     <div id="divTastoAggiungi">
         <input id="btnAggiungiCamera" type="button" value="Aggiungi Camera ↓" onclick="mostraNascondiDiv()">
@@ -54,14 +53,16 @@
          <form method="post">
             {% csrf_token %}
                 {{ form.as_p }}
-             <button type="submit" value="Aggiungi"> Aggiungi</button>
+             <button id="btnAggiungiCameraNuova" type="submit" value="Aggiungi"> Aggiungi</button>
         </form>
     </div>
     <div id="divCamereAggiunte">
     {% if vuoto %}
             <h2 id="errore">Ancora nessuna camera aggiunta...</h2>
         {% endif %}
-        <h1>Camere dell'hotel</h1>
+        <h2 id="intestazioneAggiungiCamera"> Qui, troverai le camere dell'Hotel selezionato.</h2>
+        <p id="testoPerCliente5"> Così puoi tener d'occhio sempre se c'è tutto.</p>
+        <p> </p>
         <table>
             <tr>
                 <th>Numero</th>
