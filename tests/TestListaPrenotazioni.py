@@ -51,19 +51,17 @@ class TestListaPrenotazioni(TestCase):
         self.prenotazione2.save()
         self.listaPrenotazioni.append(self.prenotazione2)
 
+        # Inizializzazione client (vedi documentazione django, testing client)
+        self.client = Client()
+        self.client.logout()
 
-        #assert Albergatore.autorizzaAccesso(albergatore.getEmail(), albergatore.getPassword())
-
-    #Una volta loggato, l'utente accede dal menu alla lista delle prenotazioni che li mostra la lista delle prenotazioni
-    #                   con i dati relativi ad ogni prenotazione
-
-        self.client = Client() #inizializzazione client (vedi documentazione django, testing client)
-
+    # Test lista delle prenotazioni, requisito user story
     def testListaPrenotazioni(self):
         self.assertEqual(len(Prenotazione.objects.all()), 2)
         self.assertEqual(self.listaPrenotazioni[0], self.prenotazione1, "Prenotazione 1 non e' presente nella lista")
         self.assertEqual(self.listaPrenotazioni[1], self.prenotazione2, "Prenotazione 2 non e' presente nella lista")
 
+    # Test vista lista delle prenotazioni, requisito user story
     def testViewListaPrenotazioni(self):
         # Per visualizzare la lista camere e' necessario loggarsi, si manda una richiesta POST con i dati
         response = self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password}, follow=True)
@@ -72,6 +70,7 @@ class TestListaPrenotazioni(TestCase):
 
         # Si controlla che la risposta contenga i dati degli delle prenotazioni, fatte agli hotel dell'albergatore loggato
         self.assertContains(response, self.prenotazione1.utente)
+
         #il template specifica solo numero e hotel
         self.assertContains(response, self.prenotazione1.camera.numero)
         self.assertContains(response, self.prenotazione1.camera.hotel.nome)

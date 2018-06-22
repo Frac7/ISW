@@ -40,10 +40,12 @@ class TestListaPrenotazioni(TestCase):
         self.assertEqual(self.listaHotel[1], self.hotel2, "Hotel 2 non e' presente nella lista")
 
     def testViewListaHotelPosseduti(self):
-        # Per visualizzare la lista camere e' necessario loggarsi, si manda una richiesta POST con i dati
-        response = self.client.post("/Login.html/", {"email": self.albergatore.email, "password": self.albergatore.password})
-        self.assertTrue(response)
-        response = self.client.get("/AggiungiHotel/" + str(self.albergatore.id) + "/", follow=True)
+        # Una volta fatto il login deve essere visualizzata la home
+        self.client.post("/Login/",
+                         {"email": self.albergatore.email, "password": self.albergatore.password},
+                         follow=True)
+        # Da qui si passa alla lista hotel
+        response = self.client.get("/AggiungiHotel/" + str(self.albergatore.id) + "/")
 
         # Si controlla che la risposta contenga i dati degli hotel posseduti dall'albergatore loggato
         self.assertContains(response, self.hotel1.nome)

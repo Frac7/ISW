@@ -16,14 +16,16 @@
             <img id="logo" src="{% static '/img/LogoBooking.png' %}" alt="Logo" width="100" height="100">
             <h1 id="intLogo"> The Reception.com</h1>
         </div>
-
-            <br>
-          <h2>Registrati come Albergatore per Inserire e Gestire i tuoi Hotel!</h2>
-          <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Registrati</button>
-          </form>
-
     </header>
+    <div>
+        <h2 id="intestazioneRegistrazione">Registrati come Albergatore per Inserire e Gestire i tuoi Hotel!</h2>
+    </div>
+    <div id="formRegistrazione">
+        <form method="post">
+           {% csrf_token %}
+           {{ form.as_p }}
+            <button id="btnFormRegistrati" type="submit">Registrati</button>
+            <button id="btnFormRegistratiAnnulla" type="button" value="ritorna" onclick="top.location.href='/'"> Annulla</button>
+        </form>
+    </div>
 </body>

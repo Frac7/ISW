@@ -126,6 +126,11 @@ class TestCamera(TestCase):
         self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
         self.albergatore.save()
 
+        # Creazione user django per login
+        user = User(username=email)
+        user.set_password(password)
+        user.save()
+
         # Creazione indirizzi per gli hotel
         indirizzo1 = Indirizzo(via='Via Trieste', numero='14')
         indirizzo1.save()
@@ -164,6 +169,7 @@ class TestCamera(TestCase):
 
         # Creazione client per test richiesta/risposta
         self.client = Client()
+        self.client.logout()
 
     def testModelsListaServizi(self):
         servizi = ServiziDisponibili.objects.all().get(id=self.servizi.id)

@@ -7,7 +7,7 @@
     <meta name="author">
     <meta name="keywords" content="the reception reseption booking hotel prenota">
     <link rel="stylesheet" href="{% static 'Style.css' %}">
-    <title>Lista Camere Disponibili</title>
+    <title> Risultato Ricerca</title>
 </head>
 
 <body>
@@ -18,8 +18,9 @@
         </div>
         <div id="divIntestazioneRicerca">
             <h1 id="intestazioneRicerca"> Questi sono gli Hotel che corrispondo ai criteri di ricerca per la tua vacanza.</h1>
-            <p id="testoPerCliente6"> Scegli quello che ti piace di più e prenotalo.</p>
+            <p id="testoPerCliente6">  La spiegazione dei servizi trovi in fondo alla pagina. <br> Scegli quello che ti piace di più e prenotalo. </p>
         </div>
+    </header>
         <div id="divRisultatoRicerca">
             <table>
                 <tr>
@@ -31,8 +32,6 @@
                 </tr>
 
                 {% for camera in camere %}
-
-
                     <tr>
                         <td> {{ camera.hotel.nome }}</td>
                         <td> {{ camera.numero }} </td>
@@ -48,7 +47,7 @@
                                 {% endif %}
                             {% endfor %}
                         </td>
-                        <td><a href="/Prenota/{{ camera.hotel.nome }}/{{ camera.numero }}/{{ camera.postiLetto }}/{{ camera.id }}/{{ dataArrivo.day }}-{{ dataArrivo.month }}-{{ dataArrivo.year }}/{{ dataPartenza.day }}-{{ dataPartenza.month }}-{{ dataPartenza.year }}/">Prenota </a></td>
+                        <td><a id="btnPrenota" href="/Prenota/{{ camera.hotel.nome }}/{{ camera.numero }}/{{ camera.postiLetto }}/{{ camera.id }}/{{ dataArrivo.day }}-{{ dataArrivo.month }}-{{ dataArrivo.year }}/{{ dataPartenza.day }}-{{ dataPartenza.month }}-{{ dataPartenza.year }}/">Prenota </a></td>
                         <!-- <td><a href="/Prenota/{{ camera.hotel.nome }}/{{ camera.numero }}/">Prenota </a></td> -->
                     </tr>
 
@@ -57,14 +56,13 @@
             </table>
         </div>
         <br>
-        <div> Legenda: </div>
-        <div>
+        <div id="intestazioneLegenda"> Legenda: </div>
+        <div id="listaLegenda">
         {% for serv in servizi %}
             <div>
-                {{ serv }}
+                - {{ serv }}
             </div>
         {% endfor %}
         </div>
-    </header>
 </body>
 </html>

@@ -12,23 +12,27 @@
             <img id="logo" src="{% static 'img/LogoBooking.png' %}" alt="Logo" width="100" height="100">
             <h1 id="intLogo"> The Reception.com</h1>
         </div>
-        <br>
+    </header>
+    <div>
         <div>
-            <b><p>Per procedere alla prenotazione della tua camera, inserisci il tuo indirizzo Email</p></b>
-            <p><b>Hotel Scelto:</b> {{ nomeHotel }}</p>
-            <p><b>Camera:</b> {{ numeroCamera }}</p>
-            <p><b>Posti letto:</b> {{ postiLetto }}</p>
-            <p><b>Data di Arrivo:</b> {{ arrivo }}</p>
-            <p><b>Data di Partenza:</b> {{ partenza }}</p>
-            <div id="divRicerca">
-                <form action="PrenotazioneEffettuata/" method="post">
-                {% csrf_token %}
-
+            <h2 id="intestazionePrenota">Per procedere alla prenotazione della tua camera, inserisci il tuo indirizzo Email</h2>
+            <div id="formPrenota">
+                <p> <b id="prenota1">Hotel Scelto:</b> {{ nomeHotel }}</p>
+                <p> <b id="prenota2">Camera:</b> {{ numeroCamera }}</p>
+                <p> <b id="prenota3">Posti letto:</b> {{ postiLetto }}</p>
+                <p> <b id="prenota4">Data di Arrivo:</b> {{ arrivo }}</p>
+                <p> <b id="prenota5">Data di Partenza:</b> {{ partenza }}</p>
+                <div id="divEmailPrenota">
+                    <form action="PrenotazioneEffettuata/" method="post">
+                    {% csrf_token %}
                     {{ form }}
-                    <button id="btnPrenota" type="submit"> <b> Prenota</b> </button>
-                </form>
+                    <br>
+                        <button id="btnPrenotaPrenotazione" type="submit"> <b> Prenota</b> </button>
+                        <button id="btnAnnullaPrenotazione" value="ritorna" onclick="top.location.href='/'"> <b> Annulla</b> </button>
+                    </form>
+                </div>
             </div>
         </div>
-    </header>
+    </div>
 </body>
 </html>
