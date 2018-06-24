@@ -11,21 +11,22 @@ import unittest
 # Test Unitari.
 
 class TestAlbergatore(TestCase):
+
     def setUp(self):
         email = "pinopipetta@outlook.com"
-        password = "ninnito42"
+        self.password1 = "ninnito42"
         #Definisco degli elementi che salvo nel DB temporaneo per poter effettuare i test
-        self.albergatore1 = Albergatore(nome="Pino", cognome="Pipetta", email=email,
-                                   password=password)
+        self.albergatore1 = Albergatore(nome="Pino", cognome="Pipetta", email=email, username=email)
+        self.albergatore1.set_password(self.password1)
         self.albergatore1.save()
-        self.user1 = User(username=email)
-        self.user1.set_password(password)
-        self.user1.save()
-        self.albergatore2 = Albergatore(nome="Pippo", cognome="Pluto", email="pippopluto@outlook.com", password="cosimo83")
+        self.password2 = "cosimo83"
+        self.albergatore2 = Albergatore(nome="Pippo", cognome="Pluto", email="pippopluto@outlook.com", username="pippopluto@outlook.com")
+        self.albergatore2.set_password(self.password2)
         self.albergatore2.save()
-        self.user2 = User(username="pippopluto@outlook.com")
-        self.user2.set_password("cosimo83")
-        self.user2.save()
+        self.password3 = "OrestinaSanna"
+        self.albergatore3 = Albergatore(nome="Pasqualina", cognome="Nonnis", email="pasquaPesus@outlook.com", username="pasquaPesus@outlook.com")
+        self.albergatore3.set_password(self.password3)
+        self.albergatore3.save()
         indirizzo1 = Indirizzo(via="Via Trincea Delle Frasche", numero="13")
         indirizzo1.save()
         indirizzo2 = Indirizzo(via="Via Inferno", numero="667")
@@ -49,9 +50,8 @@ class TestAlbergatore(TestCase):
         self.client = Client()
 
     def testAlbergatore(self):
-        self.assertEqual(len(Albergatore.objects.all()), 2) #controllo che gli albergatori siano 2
+        self.assertEqual(len(Albergatore.objects.all()), 3) #controllo che gli albergatori siano 3
         self.assertEqual(self.albergatore1, self.hotel1.proprietario, "Albergatore assegnato in maniera errata") #controllo che l'hotel 1 abbia come albergatore albergatore1
-
 
     def testListaPrenotazioni(self):
         self.assertEqual(len(self.albergatore1.prenotazioniPerAlbergatore()), 1) #controllo che prenotazioni albergatore restituisca esattamente 1 elemento
@@ -60,19 +60,75 @@ class TestAlbergatore(TestCase):
         self.assertEqual(len(self.albergatore1.listaHotel()), 1) #controllo che lista hotel restituisca esattamente un solo elemento
 
     def testViewListaHotel(self): #qui il problema è che in setup non crei l'user django
-        self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.albergatore1.password}, follow=True)
+        self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.password1}, follow=True)
         response = self.client.post("/AggiungiHotel/" + str(self.albergatore1.id) + "/", follow=True)
         self.assertContains(response, self.hotel1.nome) #controllo che nella pagina ci sia il nome dell'hotel1
+
     def testViewListaPrenotazioni(self):
-        self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.albergatore1.password}, follow=True)
+        self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.password1}, follow=True)
 
         response = self.client.post("/Home/" + str(self.albergatore1.id), follow=True)
         self.assertContains(response, self.prenotazione.camera.numero) #controllo che nella pagina ci sia il numero della camera prenotata
 
+    def testViewNessunaPrenotazione(self):
+        #L'albergatore che cerca di accedere al suo hotel senza camera visualizza un messaggio apposito
+        self.client.post("/Login/", {"email": self.albergatore2.email, "password": self.password2},
+                         follow=True)
+        response = self.client.get("/Home/" + str(self.albergatore2.id) + "/", follow=True)
+        self.assertContains(response, "Ancora nessuna prenotazione")
+
+    def testViewNessunHotel(self):
+        #L'albergatore che cerca di accedere al suo hotel senza camera visualizza un messaggio apposito
+        self.client.post("/Login/", {"email": self.albergatore3.email, "password": self.password3},
+                         follow=True)
+        response = self.client.get("/AggiungiHotel/" + str(self.albergatore2.id) + "/", follow=True)
+        self.assertContains(response, "Ancora nessun hotel")
+
+    def testViewsUtenteNonLoggato(self):
+        #Un utente non loggato che cerca di accedere ai dettagli di un hotel deve prima effettuare l'accesso
+        response = self.client.get("/AggiungiHotel/" + str(self.albergatore1.id) +"/")
+        self.assertEquals(response.status_code, 302) #Redirezione
+        self.assertEquals(response.url, "/Login?next=/AggiungiHotel/" + str(self.albergatore1.id) +"/")
+
+    def testViewsUtenteNonTrovato(self):
+        #Dopo aver effettuato l'accesso, l'utente tenta di accedere ad una pagina di un albergatore non esistente
+        self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.password1},
+                         follow=True)
+        response = self.client.post("/AggiungiHotel/" + str(0), follow=True)
+        self.assertEqual(response.status_code, 404)
+
+    def testViewsUtenteDiverso(self):
+        # Dopo aver effettuato l'accesso, l'utente tenta di accedere ad una pagina di un altro albergatore
+        self.client.post("/Login/", {"email": self.albergatore2.email, "password": self.password2},
+                         follow=True)
+        response = self.client.post("/AggiungiHotel/" + str(self.albergatore1.id) + "/", follow=True)
+        #Redirezione: risposta, url attesa dopo il reindirizzamento, codice stato
+        self.assertRedirects(response, "/AggiungiHotel/" + str(self.albergatore2.id) + "/", status_code=302)
+
+    def testViewsAggiungiHotel(self):
+        self.client.post("/Login/", {"email": self.albergatore2.email, "password": self.password2}, follow=True)
+        response = self.client.post("/AggiungiHotel/" + str(self.albergatore2.id) + "/",
+                                    {"nome": "Lu Hotel", "descrizione": "Hotel a 4 stelle a Carbonia", "citta": "Carbonia", "via": "Via Costituente", "numeroCivico": "30" }, follow=True)
+        #Dopo aver effettuato il login e aggiunto un hotel con richiesta post, si controlla che questo sia presente
+        for hotel in self.albergatore2.listaHotel():
+            self.assertContains(response, hotel.nome)
+            self.assertContains(response, len(hotel.listaCamere()))
+
+    def testViewsAggiungiHotelFormErrato(self):
+        numeroHotelPosseduti = len(self.albergatore2.listaHotel())
+        self.client.post("/Login/", {"email": self.albergatore2.email, "password": self.password2}, follow=True)
+        self.client.post("/AggiungiHotel/" + str(self.albergatore2.id) + "/",
+                                    {}, follow=True)
+        #Dopo aver effettuato il login e aggiunto un hotel con richiesta post errata, si controlla che questo non sia presente
+        self.assertEqual(numeroHotelPosseduti, len(self.albergatore2.listaHotel()))
+        self.client.post("/AggiungiHotel/" + str(self.albergatore2.id) + "/",
+                                    {"nome": "hotel"}, follow=True)
+
 class TestPrenotazioni(TestCase):
+
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password)
-        albergatore=Albergatore(nome="NomeAlbergatore",cognome="CognomeAlbergatore",email="email",password="password")
+        albergatore=Albergatore(nome="NomeAlbergatore",cognome="CognomeAlbergatore",email="email",username="email", password="password")
         # Salvataggio nel db temporaneo
         albergatore.save()
 
@@ -219,17 +275,13 @@ class TestPrenotazioni(TestCase):
 
 
 class TestCamera(TestCase):
+
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password
         email = "user@email.com"
         password = "password"
-        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
+        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, username=email, password=password)
         self.albergatore.save()
-
-        # Creazione user django per login
-        user = User(username=email)
-        user.set_password(password)
-        user.save()
 
         # Creazione indirizzi per gli hotel
         indirizzo1 = Indirizzo(via='Via Trieste', numero='14')
@@ -302,22 +354,18 @@ class TestCamera(TestCase):
         self.assertEqual(self.listaCamere[1], self.camera2, "Camera 2 non e' presente nella lista")
 
 class TestHotel(TestCase):
+
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password
         email = "username@dominio.it"
-        password = "unaPassword"
-        self.albergatore = Albergatore(nome="un", cognome="Albergatore", email=email, password=password)
+        self.password = "unaPassword"
+        self.albergatore = Albergatore(nome="un", cognome="Albergatore", email=email, username=email)
+        self.albergatore.set_password(self.password)
         self.albergatore.save()
-        #Creazione user django per login
-        user = User(username=email)
-        user.set_password(password)
-        user.save()
         #Creazione altro user
-        self.albergatore2 = Albergatore(nome="unNuovo", cognome="Albergatore", email="nuovoAlbergatore@email.com", password=password)
+        self.albergatore2 = Albergatore(nome="unNuovo", cognome="Albergatore", username="nuovoAlbergatore@email.com", email="nuovoAlbergatore@email.com")
+        self.albergatore2.set_password(self.password)
         self.albergatore2.save()
-        user2 = User(username="nuovoAlbergatore@email.com")
-        user2.set_password(password)
-        user2.save()
         # Creazione singolo servizio: nome e descrizione
         servizio = Servizio(nome="TV", descrizioneServizio="televisione")
         servizio.save()
@@ -371,21 +419,21 @@ class TestHotel(TestCase):
 
     def testViewsUtenteNonTrovato(self):
         #Dopo aver effettuato l'accesso, l'utente tenta di accedere ad una pagina di un hotel non esistente
-        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password},
+        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.password},
                          follow=True)
         response = self.client.post("/InfoHotelAggiungiCamera/" + str(0), follow=True)
         self.assertEqual(response.status_code, 404)
 
     def testViewsUtenteDiverso(self):
         # Dopo aver effettuato l'accesso, l'utente tenta di accedere ad una pagina di un hotel che non gli appartiene
-        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password},
+        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.password},
                          follow=True)
-        response = self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel2.id), follow=True)
+        response = self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel2.id) + "/", follow=True)
         #Redirezione: risposta, url attesa dopo il reindirizzamento, codice stato
-        self.assertRedirects(response, "/Home/" + str(self.albergatore.id) + "/", status_code=301)
+        self.assertRedirects(response, "/Home/" + str(self.albergatore.id) + "/", status_code=302)
 
     def testViewsListaCamere(self):
-        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password}, follow=True)
+        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.password}, follow=True)
         response = self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel.id), follow=True)
         #Dopo aver effettuato il login ed aver mandato una richiesta get alla pagina del dettaglio hotel
         self.assertContains(response, self.camera.numero)
@@ -405,7 +453,7 @@ class TestHotel(TestCase):
         #Si controlla, dopo la creazione di un nuovo hotel, che questo sia diverso dal precedente
 
     def testViewsHotel(self):
-        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password}, follow=True)
+        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.password}, follow=True)
         response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/", follow=True)
         #Dopo aver effettuato il login, si controlla che la pagina del dettaglio hotel contenga i dettagli dell'hotel
         self.assertContains(response, self.camera.numero)
@@ -413,34 +461,46 @@ class TestHotel(TestCase):
         self.assertContains(response, self.hotel.descrizione)
 
     def testViewsAggiungiCamera(self):
-        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password}, follow=True)
+        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.password}, follow=True)
         response = self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/",
                                     {"numero": "101", "postiLetto": "1", "serivizio1": True, "serivizio2": False, "serivizio3": False }, follow=True)
         #Dopo aver effettuato il login e aggiunto una camera con richiesta post, si controlla che questa sia presente
         self.assertContains(response, "101")
         self.assertContains(response, "1")
+        self.assertContains(response, "TV")
+
+    def testViewsAggiungiCameraFormErrato(self):
+        numeroCamereHotel = len(self.hotel.listaCamere())
+        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.password}, follow=True)
+        self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/",
+                                    {}, follow=True)
+        #Dopo aver effettuato il login e aggiunto una camera con richiesta post errata, si controlla che questa non sia presente
+        self.assertEqual(numeroCamereHotel, len(self.hotel.listaCamere()))
+        self.client.post("/InfoHotelAggiungiCamera/" + str(self.albergatore.id) + "/",
+                         {"numero": 1}, follow=True)
+        self.assertEqual(numeroCamereHotel, len(self.hotel.listaCamere()))
 
     def testViewNessunaCamera(self):
         #L'albergatore che cerca di accedere al suo hotel senza camera visualizza un messaggio apposito
-        self.client.post("/Login/", {"email": self.albergatore2.email, "password": self.albergatore2.password},
+        self.client.post("/Login/", {"email": self.albergatore2.email, "password": self.password},
                          follow=True)
         response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.hotel2.id) + "/", follow=True)
-        self.assertContains(response, "nessuna camera")
+        self.assertContains(response, "Ancora nessuna camera")
+
 class TestLogin(TestCase):
+
     def setUp(self):
         #Creazione primo user
-        user1 = User(username="albergatore@dominio.it")
-        user1.set_password("UnaPasswordPerIlPrimoAlbergatore")
-        user1.save()
         #Creazione albergatore associato
-        self.albergatore1 = Albergatore(email="albergatore@dominio.it", password="UnaPasswordPerIlPrimoAlbergatore", nome="", cognome="")
+        self.albergatore1 = Albergatore(email="albergatore@dominio.it", username="albergatore@dominio.it", nome="", cognome="")
+        self.password1 = "UnaPasswordPerIlPrimoAlbergatore"
+        self.albergatore1.set_password(self.password1)
         self.albergatore1.save()
         # Creazione altro user
-        user2 = User(username="nuovoAlbergatore@email.com")
-        user2.set_password("UnaPasswordPerIlSecondoAlbergatore")
-        user2.save()
         #Creazione albergatore associato
-        self.albergatore2 = Albergatore(email="nuovoAlbergatore@email.com", password="UnaPasswordPerIlSecondoAlbergatore", nome="", cognome="")
+        self.albergatore2 = Albergatore(email="nuovoAlbergatore@email.com", username="nuovoAlbergatore@email.com", nome="", cognome="")
+        self.password2 = "UnaPasswordPerIlSecondoAlbergatore"
+        self.albergatore2.set_password(self.password2)
         self.albergatore2.save()
         #Creazione client
         self.client = Client()
@@ -448,76 +508,107 @@ class TestLogin(TestCase):
 
     def testLoginRiuscito(self):
         #Dopo essersi loggato, l'albergatore viene rimandato alla pagina delle sue prenotazioni
-        response = self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.albergatore1.password}, follow=True)
-        self.assertContains(response,"prenotazioni")
+        response = self.client.post("/Login/", {"email": self.albergatore1.email, "password": self.password1}, follow=True)
+        self.assertContains(response,"Qui, trovi le prenotazioni fatte ai tuoi Hotel.")
+
     def testEmailErrata(self):
         #Login con email errata: nella pagina deve essere mostrato un errore
         response = self.client.post("/Login/",
-                                    {"email": "email@email.com", "password": self.albergatore1.password},
+                                    {"email": "email@email.com", "password": self.password1},
                                     follow=True)
-        self.assertContains(response, "errati")
+        self.assertContains(response, "I dati inseriti sono errati.")
+
     def testPasswordErrata(self):
         # Login con password errata: nella pagina deve essere mostrato un errore
         response = self.client.post("/Login/",
                                     {"email": self.albergatore1.email, "password": "p"},
                                     follow=True)
-        self.assertContains(response, "errati")
+        self.assertContains(response, "I dati inseriti sono errati.")
+
     def testDatiErrati(self):
         # Login con email e password errati: nella pagina deve essere mostrato un errore
         response = self.client.post("/Login/",
                                     {"email": "email@email.com", "password": "p"},
                                     follow=True)
-        self.assertContains(response, "errati")
+        self.assertContains(response, "I dati inseriti sono errati.")
+
     def testFormErrato(self):
         response = self.client.post("/Login/",
                                     {"email": "", "password": ""},
                                     follow=True)
-        self.assertContains(response, "errati")
+        self.assertContains(response, "I dati inseriti sono errati.")
+
     def testVisualizzaMainLoggato(self):
         #Dopo aver effettuato l'accesso, l'albergatore non può visualizzare il main. Per prenotare deve sloggarsi
         self.client.post("/Login/",
-                                    {"email": self.albergatore2.email, "password": self.albergatore2.password},
+                                    {"email": self.albergatore2.email, "password": self.password2},
                                     follow=True)
         response = self.client.get("/")
         self.assertEqual(response.status_code, 302)
+
     def testLoginLoggato(self):
         #Dopo aver effettuato l'accesso, l'albergatore non può visualizzare il login. Per accedere deve sloggarsi
         self.client.post("/Login/",
-                                    {"email": self.albergatore2.email, "password": self.albergatore2.password},
+                                    {"email": self.albergatore2.email, "password": self.password2},
                                     follow=True)
-        response = self.client.get("/Login")
-        self.assertEqual(response.status_code, 301)
+        response = self.client.get("/Login/")
+        self.assertEqual(response.status_code, 302)
         response = self.client.get("/Login", follow=True)
-        self.assertNotContains(response, "welcome")
+        self.assertNotContains(response, "Welcome")
+
     def testVisualizzaHomeNonLoggato(self):
         #Un utente non loggato non può visualizzare la pagina delle prenotazioni
         response = self.client.get("/Home/" + str(self.albergatore1.id) + "/")
         self.assertEquals(response.url, "/Login?next=/Home/" + str(self.albergatore1.id) + "/")
+
     def testVisualizzaHotelNonLoggato(self):
         #Un utente non loggato non può visualizzare la pagina lista di hotel di un certo albergatore
         response = self.client.get("/AggiungiHotel/" + str(self.albergatore1.id) + "/")
         self.assertEquals(response.url, "/Login?next=/AggiungiHotel/" + str(self.albergatore1.id) + "/")
+
     def testVisualizzaCamereNonLoggato(self):
         # Un utente non loggato che cerca di accedere ai dettagli di un hotel deve prima effettuare l'accesso
         response = self.client.get("/InfoHotelAggiungiCamera/1/")
         self.assertEquals(response.url, "/Login?next=/InfoHotelAggiungiCamera/1/")
+
     def testLogout(self):
         self.client.post("/Login/",
-                         {"email": self.albergatore2.email, "password": self.albergatore2.password},
+                         {"email": self.albergatore2.email, "password": self.password2},
                          follow=True)
         response = self.client.get("/Logout/", follow=True)
-        self.assertContains(response, "aspetti")
+        self.assertContains(response, "Tutti meritano una vacanza. Cosa aspetti?")
         #Si controlla che l'utente sia davvero sloggato, quindi si tenta di visualizzare la pagina delle prenotazioni
-        response = self.client.get("/Home/" + str(self.albergatore1.id))
-        self.assertEqual(response.status_code, 301)
+        response = self.client.get("/Home/" + str(self.albergatore1.id) + "/")
+        self.assertEqual(response.status_code, 302)
+
     def testLogoutNonLoggato(self):
         #Un utente non loggato non può sloggarsi
         response = self.client.get("/Logout/")
         self.assertEquals(response.url, "/Login?next=/Logout/")
 
+    def testViewsPrenotazioneLogin(self):
+        # Un utente loggato che cerca di prenotare viene rimandato alla sua home
+        self.client.post("/Login/",
+                         {"email": self.albergatore1.email, "password": self.password1},
+                         follow=True)
+        response = self.client.post("/", {"citta": "Roma", "dataArrivo": "26-06-2018", "dataPartenza": "25-06-2018", "posti": 1}, follow=True)
+        self.assertNotContains(response, "email")
+        response = self.client.post("/Prenota/1/1/1/25-06-2018/26-06-2018/", {"email": "lol@email.com"}, follow=True)
+        self.assertEqual(response.status_code, 404)
+
+    def testRegistrazioneUtenteLoggato(self):
+        #Un utente loggato che cerca di accedere alla registrazione viene rimandato alla sua home
+        self.client.post("/Login/",
+                         {"email": self.albergatore1.email, "password": self.password1},
+                         follow=True)
+        response = self.client.get("/signup/")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/Home/" + str(self.albergatore1.id))
+
 class TestSignup(TestCase):
     def setUp(self):
-        client=Client()
+        self.client=Client()
+        self.client.logout()
 
 
     def testRegistrazioneOk(self):
@@ -537,20 +628,19 @@ class TestSignup(TestCase):
         self.assertContains(response,"Qui, trovi le prenotazioni fatte ai tuoi Hotel")
 
 
-    #def testUtenteNonInserito(self):
-    #    nome = "nome"
-    #    cognome = "Cognome"
-    #    email = "email@dominio.it"
-    #    password1 = "thereception"
-    #    password2 = "thereception"
-    #    response = self.client.post("/signup/", {"username": email,
-    #                    "nome": nome,
-    #                    "cognome": "",
-    #                    "password1": "",
-    #                    "password2": ""},
-    #                    follow=True)
-    #    print response
-    #    self.assertContains(response, "errati")
+    def testUtenteNonInserito(self):
+       nome = "nome"
+       cognome = "Cognome"
+       email = "email@dominio.it"
+       password1 = "thereception"
+       password2 = "thereception"
+       response = self.client.post("/signup/", {"username": email,
+                       "nome": nome,
+                       "cognome": "",
+                       "password1": "",
+                       "password2": ""},
+                       follow=True)
+       self.assertNotContains(response, "Prenotazioni")
 
     def testUtenteGiaPresente(self):
         # Il primo Albergatore accede alla pagina signup e inserisce email, nome, cognome
@@ -566,7 +656,9 @@ class TestSignup(TestCase):
                     "password1":password1,
                     "password2":password2},
                     follow=True)
-
+        #Una volta registrato l'utente deve vedere la sua home che ovviamente non avrà prenotazioni
+        self.assertContains(response, "Ancora nessuna prenotazione...")
+        response = self.client.get("/Logout/")
         # Un Secondo Albergatore, accede alla pagina signup e inserisce email già esistente
         # , nome, cognome e 2 volte la password
         response = self.client.post("/signup/", {"username": email,
@@ -628,6 +720,18 @@ class TestSignup(TestCase):
                     follow=True)
         self.assertContains(response,"Questa password è interamente numerica")
 
+    def testRegistrazionePasswordTroppoCorta(self):
+        response = self.client.post("/signup/", {
+            "username": "albergatore@albergatore.it",
+            "nome": "albergatore",
+            "cognome": "cognome albergatore",
+            "password1": "a1",
+            "password2": "a1"
+        }, follow=True)
+        # La registrazione errata non deve riportare alla home
+        self.assertNotContains(response, "I migliori hotel, pronti a proporti la loro camera per la tua vacanza.")
+        self.assertContains(response, "Questa password è troppo corta")
+
 
     def testPasswordTroppoSimileANomeUtente(self):
         # L' Albergatore accede alla pagina signup e inserisce email, nome, cognome e
@@ -661,7 +765,6 @@ class TestSignup(TestCase):
                     "password2":password2},
                     follow=True)
         self.assertContains(response,"Immetti un nome utente valido")
-
 
 if __name__ == "__main__":
     unittest.main()

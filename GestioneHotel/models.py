@@ -1,13 +1,15 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 import django
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
-class Albergatore(models.Model):
-    nome = models.CharField(max_length=50,default="")
-    cognome = models.CharField(max_length=50,default="")
-    email = models.EmailField(max_length=50,default="")
-    password = models.CharField(max_length=32,default="")
-
+class Albergatore(AbstractUser): #Estende user django
+    email = models.EmailField(_('email address'), unique=True)
+    nome = models.CharField(max_length=50, default="")
+    cognome = models.CharField(max_length=50, default="")
     #Lista degli Hotel di un Albergatore
     def listaHotel(self):
         listaHotel = []
@@ -23,7 +25,12 @@ class Albergatore(models.Model):
         return listaPrenotazioni
 
     def __unicode__(self):
-        return "%s, %s, %s" % (self.nome, self.cognome, self.email)
+        return "%s" % (self.email)
+
+@receiver(pre_save, sender=Albergatore)
+def aggiornamentoCampoEmail(instance, **kwargs):
+    if instance.email == "":
+        instance.email = instance.username
 
 class Indirizzo(models.Model):
     via = models.CharField(max_length=50,default="")

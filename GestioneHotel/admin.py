@@ -1,5 +1,9 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+from GestioneHotel.models import *
 from django.contrib import admin
-from .models import *
+
+# Register your models here.
 
 admin.site.register(Albergatore)
 admin.site.register(Indirizzo)

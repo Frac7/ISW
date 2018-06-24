@@ -9,13 +9,10 @@ class TestAggiungiCamera(TestCase):
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password
         email = "username@dominio.it"
-        password = "unaPassword"
-        self.albergatore = Albergatore(nome="un", cognome="Albergatore", email=email, password=password)
+        self.password = "unaPassword"
+        self.albergatore = Albergatore(nome="un", cognome="Albergatore", email=email, username=email)
+        self.albergatore.set_password(self.password)
         self.albergatore.save()
-        #Creazione user a cui e' associato l'albergatore
-        self.user = User(username=self.albergatore.email)
-        self.user.set_password(password)
-        self.user.save()
         # Creazione singolo servizio: nome e descrizione
         servizio = Servizio(nome="TV", descrizioneServizio="televisione")
         servizio.save()
@@ -41,11 +38,10 @@ class TestAggiungiCamera(TestCase):
         tuttiGliAlbergatori = Albergatore.objects.all()
         self.assertEqual(self.albergatore.email, tuttiGliAlbergatori.get(id=self.albergatore.id).email)
         self.assertEqual(self.albergatore.password, tuttiGliAlbergatori.get(id=self.albergatore.id).password)
-        self.assertEqual(len(User.objects.all()), len(Albergatore.objects.all()))
     def testViewLogin(self):
         #Una volta fatto il login deve essere visualizzata la home
         response = self.client.post("/Login/",
-                         {"email": self.albergatore.email, "password": self.albergatore.password},
+                         {"email": self.albergatore.email, "password": self.password},
                          follow=True)
         self.assertNotContains(response, "errati")
         self.assertContains(response, "prenotazioni")
@@ -64,7 +60,7 @@ class TestAggiungiCamera(TestCase):
     def testViewAggiungicamera(self):
         # Una volta fatto il login deve essere visualizzata la home
         self.client.post("/Login/",
-                                    {"email": self.albergatore.email, "password": self.albergatore.password},
+                                    {"email": self.albergatore.email, "password": self.password},
                                     follow=True)
         #Da qui si passa alla lista hotel
         response = self.client.get("/AggiungiHotel/" + str(self.albergatore.id) + "/")

@@ -7,13 +7,10 @@ import unittest
 class TestElencoCamere(TestCase):
     def setUp(self):
         email = "user@email.com"
-        password = "password"
-        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
+        self.password = "password"
+        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, username=email)
+        self.albergatore.set_password(self.password)
         self.albergatore.save()
-
-        self.user = User(username=email)
-        self.user.set_password(password)
-        self.user.save()
 
         # Creazione indirizzi per gli hotel
         indirizzo1 = Indirizzo(via='Via Trieste', numero='14')
@@ -62,7 +59,7 @@ class TestElencoCamere(TestCase):
     def testViewElencoCamere(self):
         # Una volta fatto il login deve essere visualizzata la home
         self.client.post("/Login/",
-                         {"email": self.albergatore.email, "password": self.albergatore.password},
+                         {"email": self.albergatore.email, "password": self.password},
                          follow=True)
         response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.albergatore.id) + "/")
 

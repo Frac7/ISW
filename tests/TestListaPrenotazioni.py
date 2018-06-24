@@ -10,13 +10,10 @@ class TestListaPrenotazioni(TestCase):
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password
         email = "user@email.com"
-        password = "password"
-        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
+        self.password = "password"
+        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, username=email)
+        self.albergatore.set_password(self.password)
         self.albergatore.save()
-
-        self.user = User(username=email)
-        self.user.set_password(password)
-        self.user.save()
 
         # Creazione indirizzi per gli hotel
         indirizzo1 = Indirizzo(via='Via Trieste', numero='14')
@@ -69,7 +66,7 @@ class TestListaPrenotazioni(TestCase):
     # Test vista lista delle prenotazioni, requisito user story
     def testViewListaPrenotazioni(self):
         # Per visualizzare la lista camere e' necessario loggarsi, si manda una richiesta POST con i dati
-        response = self.client.post("/Login/", {"email": self.albergatore.email, "password": self.albergatore.password}, follow=True)
+        response = self.client.post("/Login/", {"email": self.albergatore.email, "password": self.password}, follow=True)
         self.assertTrue(response)
         response = self.client.get("/Home/" + str(self.albergatore.id) + "/", follow=True)
 

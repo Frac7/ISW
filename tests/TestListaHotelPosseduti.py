@@ -9,13 +9,10 @@ class TestListaPrenotazioni(TestCase):
     def setUp(self):
         #Creazione albergatore (nome, cognome, email, password
         email = "user@email.com"
-        password = "password"
-        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, password=password)
+        self.password = "password"
+        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, username=email)
+        self.albergatore.set_password(self.password)
         self.albergatore.save()
-
-        self.user = User(username=email)
-        self.user.set_password(password)
-        self.user.save()
 
         #Creazione indirizzi per gli hotel
         indirizzo1 = Indirizzo(via='Via Trieste', numero='14')
@@ -46,7 +43,7 @@ class TestListaPrenotazioni(TestCase):
     def testViewListaHotelPosseduti(self):
         # Una volta fatto il login deve essere visualizzata la home
         self.client.post("/Login/",
-                         {"email": self.albergatore.email, "password": self.albergatore.password},
+                         {"email": self.albergatore.email, "password": self.password},
                          follow=True)
         # Da qui si passa alla lista hotel
         response = self.client.get("/AggiungiHotel/" + str(self.albergatore.id) + "/", follow=True)

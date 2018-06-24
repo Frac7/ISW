@@ -2,7 +2,6 @@ from django import forms
 from GestioneHotel.models import *
 
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 
 
 # Collegato alla view signup
@@ -12,7 +11,7 @@ class SignUpForm(UserCreationForm):
     cognome = forms.CharField(max_length=50, help_text='Obbligatorio.')
 
     class Meta:
-        model = User
+        model = Albergatore
         fields = ('username', 'nome', 'cognome', 'password1', 'password2', )
 
 
@@ -34,12 +33,6 @@ class LoginForm(forms.Form):
     email = forms.EmailField(label="Email",required=True, widget=forms.TextInput(attrs={'id' : 'accediLogin'}))
     #Campo passowrd
     password = forms.CharField(label="Password",required=True,widget=forms.PasswordInput(attrs={'id' : 'accediPassword'}))
-
-class RegistrazioneAlbergatore(forms.Form):
-    nome = forms.CharField(label="nome", max_length=50,required=True, widget=forms.TextInput(attrs={'id':'registrazioneNome'}))
-    cognome = forms.CharField(label="cognome", max_length=50,required=True, widget=forms.TextInput(attrs={'id':'registrazioneCognome'}))
-    email = forms.EmailField(label="email", max_length=50,required=True, widget=forms.TextInput(attrs={'id':'registrazioneEmail'}))
-    password = forms.CharField(label="password", max_length=32,required=True, widget=forms.PasswordInput(attrs={'id':'registrazionePassword'}))
 
 class AggiungiHotelForm(forms.Form):
      nome = forms.CharField(label="Nome", max_length=30, required=True,

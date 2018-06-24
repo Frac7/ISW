@@ -12,7 +12,8 @@ from GestioneHotel.models import Albergatore, Indirizzo, Hotel, Servizio, Camera
 class TestPrenotaCamera(TestCase):
     def setUp(self):
         #Definisco degli elementi utilizzati nel test di accettazione
-        self.albergatore = Albergatore(nome='Franco', cognome='Pischedda', email='piscofranco@gmail.com',
+        self.albergatore = Albergatore(nome='Franco', cognome='Pischedda', username="piscofranco@gmail.com",
+                                       email='piscofranco@gmail.com',
                                        password='password')
         self.albergatore.save()
         indirizzo = Indirizzo(via='Via Trincea Dei razzi', numero='152A')

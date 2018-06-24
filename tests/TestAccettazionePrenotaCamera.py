@@ -8,7 +8,7 @@ from datetime import *
 class TestAccettazionePrenotaCamera(TestCase):
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password)
-        albergatore=Albergatore(nome="NomeAlbergatore",cognome="CognomeAlbergatore",email="email",password="password")
+        albergatore=Albergatore(username="email", nome="NomeAlbergatore",cognome="CognomeAlbergatore",email="email",password="password")
         # Salvataggio nel db temporaneo
         albergatore.save()
 

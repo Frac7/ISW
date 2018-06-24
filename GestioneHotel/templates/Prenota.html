@@ -28,7 +28,12 @@
                     {{ form }}
                     <br>
                         <button id="btnPrenotaPrenotazione" type="submit"> <b> Prenota</b> </button>
-                        <button id="btnAnnullaPrenotazione" value="ritorna" onclick="top.location.href='/'"> <b> Annulla</b> </button>
+                        <button id="btnAnnullaPrenotazione" value="ritorna" onclick="goBack()"> <b> Annulla</b> </button>
+                        <script>
+                            function goBack() {
+                                window.history.back();
+                            }
+                        </script>
                     </form>
                 </div>
             </div>
