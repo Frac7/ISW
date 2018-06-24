@@ -1,4 +1,6 @@
 from django import forms
+from django.forms import Field
+
 from GestioneHotel.models import *
 
 from django.contrib.auth.forms import UserCreationForm
@@ -22,11 +24,12 @@ class AggiungiCameraForm(forms.Form):
     #Posti camera: da 1 a 6
     elencoPosti = [(i, i) for i in range(1, 7)]
     postiLetto = forms.ChoiceField(label="Posti Letto", choices=elencoPosti, widget=forms.Select(attrs={'id' : 'postiCamera'}))
-    #Checkboxes servizi disponibili per ogni camera
-    servizio1 = forms.BooleanField(required=False,label="TV",widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))
-    servizio2 = forms.BooleanField(required=False,label="Aria condizionata",widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))
-    servizio3 = forms.BooleanField(required=False,label="Frigo bar",widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))
 
+    #Generazione dinamica servizi disponibili in base a quelli presenti nel db
+    def __init__(self, *args, **kwargs):
+        super(AggiungiCameraForm, self).__init__(*args, **kwargs)
+        for servizio in Servizio.objects.all():
+            self.fields[servizio.nome] = forms.BooleanField(required=False,label=servizio.nome + ", " + servizio.descrizioneServizio,widget=forms.CheckboxInput(attrs={'id': 'servizioCamera'}))
 #Form login
 class LoginForm(forms.Form):
     #Campo email

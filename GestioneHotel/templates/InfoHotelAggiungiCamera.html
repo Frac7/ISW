@@ -8,17 +8,17 @@
     <meta name="keywords" content="the reception reseption booking hotel prenota ">
     <link rel="stylesheet" href="{% static 'Style.css' %}">
     <script language="javascript">
-	function mostraNascondiDiv() {
-		if(document.getElementById("formAggiungiHotel").style.display === "block") {
-            document.getElementById("formAggiungiHotel").style.display = "none";
-            document.getElementById("btnAggiungiCamera").value = "Aggiungi Camera ↓" ;
+        function mostraNascondiDiv() {
+            if(document.getElementById("formAggiungiHotel").style.display === "block") {
+                document.getElementById("formAggiungiHotel").style.display = "none";
+                document.getElementById("btnAggiungiCamera").value = "Aggiungi Camera ↓" ;
+            }
+            else {
+                document.getElementById("formAggiungiHotel").style.display = "block";
+                document.getElementById("btnAggiungiCamera").value = "Aggiungi Camera ↑" ;
+            }
         }
-		else {
-            document.getElementById("formAggiungiHotel").style.display = "block";
-            document.getElementById("btnAggiungiCamera").value = "Aggiungi Camera ↑" ;
-        }
-	}
-</script>
+    </script>
     <title> Hotel {{ hotel.nome }}</title>
 </head>
 <body>

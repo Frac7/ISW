@@ -380,6 +380,10 @@ label[for=nomeHotel], label[for=descrizioneHotel], label[for=cittaHotel], label[
     margin-right: 25px;
 }
 
+input[type=checkbox]{
+    margin-right: 15%;
+}
+
 #testoPerCliente5 {
     margin-top: 0;
     margin-left: 29%;

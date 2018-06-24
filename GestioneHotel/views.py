@@ -106,18 +106,25 @@ def dettaglioHotel(request, hotelID):
             id = Albergatore.objects.all().get(email=request.user).id
             return redirect("/Home/" + str(id)) #Utente rimandato alla sua home
             #return HttpResponseForbidden() # Variante con codice 403
+        if len(Servizio.objects.all()) == 0:
+            #Questi servizi vengono inseriti nel db nel momento in cui la tabella servizi è vuota
+            servizioTV = Servizio(nome="TV", descrizioneServizio="TV Satellitare")
+            servizioTV.save()
+            servizioAC = Servizio(nome="AC", descrizioneServizio="Aria Condizionata")
+            servizioAC.save()
+            servizioFB = Servizio(nome="FB", descrizioneServizio="Frigo Bar")
+            servizioFB.save()
+            servizioWF = Servizio(nome="WF", descrizioneServizio="WiFi")
+            servizioWF.save()
         # Collegato al form aggiungi camera
         if request.method == "POST":  #In caso di richiesta POST
             aggiungiCameraForm = AggiungiCameraForm(request.POST)
             # Recupera il form e controlla che sia valido, se sì crea una camera
             if aggiungiCameraForm.is_valid():
                 listaServizi = [] #Vengono aggiunti i servizi in base a quelli disponibili
-                if aggiungiCameraForm.cleaned_data['servizio1'] == True:
-                    listaServizi.append(Servizio.objects.all().get(nome="TV"))
-                if aggiungiCameraForm.cleaned_data['servizio2'] == True:
-                    listaServizi.append(Servizio.objects.all().get(nome="AC"))
-                if aggiungiCameraForm.cleaned_data['servizio3'] == True:
-                    listaServizi.append(Servizio.objects.all().get(nome="FB"))
+                for servizio in Servizio.objects.all():
+                    if aggiungiCameraForm.cleaned_data[servizio.nome] == True:
+                        listaServizi.append(servizio)
                 #Servizi esistenti recuperati da checkbox
                 nuovaCamera = Camera(id=(len(Camera.objects.all())+1),numero=aggiungiCameraForm.cleaned_data['numero'],
                                      postiLetto=aggiungiCameraForm.cleaned_data['postiLetto'],

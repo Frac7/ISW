@@ -279,8 +279,9 @@ class TestCamera(TestCase):
     def setUp(self):
         # Creazione albergatore (nome, cognome, email, password
         email = "user@email.com"
-        password = "password"
-        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, username=email, password=password)
+        self.password = "password"
+        self.albergatore = Albergatore(nome="Pippo", cognome="Albergatore", email=email, username=email)
+        self.albergatore.set_password(self.password)
         self.albergatore.save()
 
         # Creazione indirizzi per gli hotel
@@ -345,6 +346,13 @@ class TestCamera(TestCase):
         camera2 = Camera(numero=2, postiLetto=4, hotel=self.hotel1)
         self.assertNotEqual(self.camera1, camera2, "E' la stessa camera, allora creazione della camera2 non e' andata a buon fine")
         self.assertNotEqual(self.prenotazione1.camera, camera2, "E' la stessa camera, allora creazione della camera2 non e' andata a buon fine")
+
+    def testViewsCameraCreazioneServizi(self):
+        self.assertTrue(len(Servizio.objects.all()), 0)
+        #Si controlla che vengano generati i servizi di default durante la prima visualizzazione della lista camere
+        self.client.post("/Login/", {"email": self.albergatore.email, "password": self.password}, follow=True)
+        self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel1.id), follow=True)
+        self.assertTrue(len(Servizio.objects.all()), 4)
 
     def testListaCamere(self):
         self.assertEqual(len(Camera.objects.all()), 2)
@@ -463,7 +471,7 @@ class TestHotel(TestCase):
     def testViewsAggiungiCamera(self):
         self.client.post("/Login/", {"email": self.albergatore.email, "password": self.password}, follow=True)
         response = self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/",
-                                    {"numero": "101", "postiLetto": "1", "serivizio1": True, "serivizio2": False, "serivizio3": False }, follow=True)
+                                    {"numero": "101", "postiLetto": "1", "TV": True}, follow=True)
         #Dopo aver effettuato il login e aggiunto una camera con richiesta post, si controlla che questa sia presente
         self.assertContains(response, "101")
         self.assertContains(response, "1")
@@ -635,11 +643,12 @@ class TestSignup(TestCase):
        password1 = "thereception"
        password2 = "thereception"
        response = self.client.post("/signup/", {"username": email,
-                       "nome": nome,
+                       "nome": "",
                        "cognome": "",
                        "password1": "",
                        "password2": ""},
                        follow=True)
+       #Se la registrazione non va a buon fine, l'utente non deve vedere la home
        self.assertNotContains(response, "Prenotazioni")
 
     def testUtenteGiaPresente(self):

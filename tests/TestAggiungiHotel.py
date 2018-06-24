@@ -7,7 +7,7 @@ class TestAggiuntaHotel(TestCase):
     def setUp(self):
         #definisco  un albergatore, un indirizzo e un hotel
         self.albergatore = Albergatore(nome='Franco', cognome='Pischedda', email='piscofranco@gmail.com',
-                                       password='password')
+                                       password='password', username="piscofranco@gmail.com")
         self.albergatore.save()
         indirizzo = Indirizzo(via='Via Trincea Dei razzi', numero='152A')
         indirizzo.save()
