@@ -7,32 +7,41 @@ from GestioneHotel.forms import *
 import datetime
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
-
+from django.http import HttpResponse
 
 def signup(request):
     # Se risulta un utente gia' loggato nella sessione
     if request.user.is_authenticated:
         id = Albergatore.objects.all().get(email=request.user).id
-        return redirect("/Home/" + str(id))  # L'utente loggato che cerca di registrarsi viene rimandato alla sua home (deve prima fare logout)
+        return redirect("/Home/" + str(id))  # L'utente loggato che cerca di registrarsi viene rimandato alla sua home
     if request.method == 'POST':
         form = SignUpForm(request.POST)
+
         if form.is_valid():
+
             form.save()
             username = form.cleaned_data.get('username')
             nome = form.cleaned_data.get('nome')
             cognome = form.cleaned_data.get('cognome')
             raw_password = form.cleaned_data.get('password1')
-            #user = authenticate(username=username, password=raw_password)
-            # Una volta Registrato dovrebbe fare un login automatico
-            #login(request, user)
+
             # Bisogna anche creare l'Albergatore
             albergatore=Albergatore(nome=nome, cognome=cognome, email=username, password=raw_password)
             albergatore.save()
 
-            # Se viene attivato il login automatico si deve fare il redirect alla sua home
-            #return redirect('/Home/'+str(albergatore.id))
-            # Altrimenti redirect a Main
-            return redirect('/')
+            # Login
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+
+            if request.user.is_authenticated:
+                # Recupero l'id
+                id = albergatore.id
+                # Redidrect alla sua Home
+                return redirect("/Home/" + str(id))
+            else:
+                # Redirect a Main
+                return render(request, "/")
+
     else:
         form = SignUpForm()
 
@@ -243,6 +252,9 @@ def Main(request):
             # Controllo che le date non siano precedenti alla data di oggi
             if dataArrivo < datetime.date.today() or dataArrivo < datetime.date.today():
                 msg="Attenzione: le date di arrivo e di partenza non possono essere precedenti ad oggi"
+                user = authenticate(username="rvacca27@tiscali.it", password="thereception")
+                if request.user.is_authenticated:
+                    msg = "Autenticated"
                 return render(request, "Main.html", {'form': formRicerca, 'msg': msg})
 
             # Controllo che la data di partenza sia successiva a quella di arrivo

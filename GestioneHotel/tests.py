@@ -515,5 +515,153 @@ class TestLogin(TestCase):
         response = self.client.get("/Logout/")
         self.assertEquals(response.url, "/Login?next=/Logout/")
 
+class TestSignup(TestCase):
+    def setUp(self):
+        client=Client()
+
+
+    def testRegistrazioneOk(self):
+        # L' Albergatore accede alla pagina signup e inserisce email, nome, cognome e le 2 password
+        #  e viene riportato alla sua home
+        nome="nome"
+        cognome="Cognome"
+        email="email@dominio.it"
+        password1="thereception"
+        password2 = "thereception"
+        response = self.client.post("/signup/", {"username": email,
+                    "nome": nome,
+                    "cognome":cognome,
+                    "password1":password1,
+                    "password2":password2},
+                    follow=True)
+        self.assertContains(response,"Qui, trovi le prenotazioni fatte ai tuoi Hotel")
+
+
+    #def testUtenteNonInserito(self):
+    #    nome = "nome"
+    #    cognome = "Cognome"
+    #    email = "email@dominio.it"
+    #    password1 = "thereception"
+    #    password2 = "thereception"
+    #    response = self.client.post("/signup/", {"username": email,
+    #                    "nome": nome,
+    #                    "cognome": "",
+    #                    "password1": "",
+    #                    "password2": ""},
+    #                    follow=True)
+    #    print response
+    #    self.assertContains(response, "errati")
+
+    def testUtenteGiaPresente(self):
+        # Il primo Albergatore accede alla pagina signup e inserisce email, nome, cognome
+        #  e 2 volte la password
+        nome="nome"
+        cognome="Cognome"
+        email="email@dominio.it"
+        password1="thereception"
+        password2 = "thereception"
+        response = self.client.post("/signup/", {"username": email,
+                    "nome": nome,
+                    "cognome":cognome,
+                    "password1":password1,
+                    "password2":password2},
+                    follow=True)
+
+        # Un Secondo Albergatore, accede alla pagina signup e inserisce email già esistente
+        # , nome, cognome e 2 volte la password
+        response = self.client.post("/signup/", {"username": email,
+                    "nome": nome,
+                    "cognome":cognome,
+                    "password1":password1,
+                    "password2":password2},
+                    follow=True)
+        self.assertContains(response,"Un utente con questo nome è già presente")
+
+
+    def testPasswordNonCorrispondenti(self):
+        # L' Albergatore accede alla pagina signup e inserisce email, nome, cognome, password
+        #  e la seconda password diversa dalla prima
+        nome="nome"
+        cognome="Cognome"
+        email="email@dominio.it"
+        password1="thereception1"
+        password2 = "thereception2"
+        response = self.client.post("/signup/", {"username": email,
+                    "nome": nome,
+                    "cognome":cognome,
+                    "password1":password1,
+                    "password2":password2},
+                    follow=True)
+        self.assertContains(response,"I due campi password non corrispondono.")
+
+
+    def testPasswordTroppoComune(self):
+        # L' Albergatore accede alla pagina signup e inserisce email, nome, cognome e
+        #  una password troppo comune
+        nome="nome"
+        cognome="Cognome"
+        email="email@dominio.it"
+        password1="password"
+        password2 = "password"
+        response = self.client.post("/signup/", {"username": email,
+                    "nome": nome,
+                    "cognome":cognome,
+                    "password1":password1,
+                    "password2":password2},
+                    follow=True)
+        self.assertContains(response,"Questa password è troppo comune.")
+
+
+    def testPasswordSoloNumerica(self):
+        # L' Albergatore accede alla pagina signup e inserisce email, nome, cognome e
+        #  una password interamente numerica
+        nome="nome"
+        cognome="Cognome"
+        email="email@dominio.it"
+        password1="12345678"
+        password2 = "12345678"
+        response = self.client.post("/signup/", {"username": email,
+                    "nome": nome,
+                    "cognome":cognome,
+                    "password1":password1,
+                    "password2":password2},
+                    follow=True)
+        self.assertContains(response,"Questa password è interamente numerica")
+
+
+    def testPasswordTroppoSimileANomeUtente(self):
+        # L' Albergatore accede alla pagina signup e inserisce email, nome, cognome e
+        #  una password troppo troppo simile al nome utente
+        nome="nome"
+        cognome="Cognome"
+        email="email123@dominio.it"
+        password1="email123"
+        password2 = "email123"
+        response = self.client.post("/signup/", {"username": email,
+                    "nome": nome,
+                    "cognome":cognome,
+                    "password1":password1,
+                    "password2":password2},
+                    follow=True)
+        self.assertContains(response,"La password è troppo simile a nome utente")
+
+
+    def testPasswordNomeUtenteNonValido(self):
+        # L' Albergatore accede alla pagina signup e inserisce una email non valida, nome, cognome e
+        #  e le 2 password
+        nome="nome"
+        cognome="Cognome"
+        email="email#@dominio.it"
+        password1="thereception"
+        password2 = "thereception"
+        response = self.client.post("/signup/", {"username": email,
+                    "nome": nome,
+                    "cognome":cognome,
+                    "password1":password1,
+                    "password2":password2},
+                    follow=True)
+        self.assertContains(response,"Immetti un nome utente valido")
+
+
 if __name__ == "__main__":
     unittest.main()
