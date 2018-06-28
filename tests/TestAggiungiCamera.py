@@ -69,11 +69,10 @@ class TestAggiungiCamera(TestCase):
         #Da qui si sceglie l'hotel al quale aggiungere la camera
         response = self.client.get("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/")
         response = self.client.post("/InfoHotelAggiungiCamera/" + str(self.hotel.id) + "/",
-                                    {"numero": "327", "postiLetto": "4", "serivizio1": True, "serivizio2": False,
-                                     "serivizio3": False}, follow=True)
+                                    {"numero": "327", "postiLetto": "4", "TV": True}, follow=True)
         self.assertContains(response, "327")
         self.assertContains(response, "4")
-        self.assertContains(response, "TV")
+        self.assertContains(response, "TV", count=4)
 
 if __name__ == "__main__":
     unittest.main()
