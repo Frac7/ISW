@@ -83,7 +83,14 @@ class Camera(models.Model):
     def disponibilitaCamera(self, da, a):
         listaPrenotazioniPerCamera = Prenotazione.objects.filter(camera=self)
         for prenotazione in listaPrenotazioniPerCamera:
-            if not(da.year > prenotazione.checkout.year and a.year > Prenotazione(camera=self).checkout.year and da.month > prenotazione.checkout.month and a.month > prenotazione.checkout.month and da.day > prenotazione.checkout.day and a.day > prenotazione.checkout.day or da.year < prenotazione.checkin.year and a.year < prenotazione.checkin.year and da.month < prenotazione.checkin.month and a.month < prenotazione.checkin.month and da.day < prenotazione.checkin.day and a.day < prenotazione.checkin.day):
+            #Si controlla che la data da sia fuori dall'intervallo di prenotazione
+            if prenotazione.checkin <= da and prenotazione.checkout >= da:
+                return False
+            #Si controlla che la data a sia fuori dall'intervallo di prenotazione
+            if prenotazione.checkin <= a and prenotazione.checkout >= a:
+                return False
+            #Si controlla che la data da e la data a non si sovrappongano all'intervallo
+            if da <= prenotazione.checkin and a >= prenotazione.checkout:
                 return False
         return True
 

@@ -259,9 +259,13 @@ def Main(request):
                 return render(request, "Main.html", {'form': formRicerca, 'msg': msg})
 
             # recupero le camere libere
-            camerelibere=(Camera.objects.exclude(id__in=Prenotazione.objects.filter(checkin__lte=dataArrivo,checkout__gt=dataArrivo\
-                    )).exclude(id__in=Prenotazione.objects.filter(checkin__lt=dataPartenza,checkout__gte=dataPartenza\
-                    )).exclude(id__in=Prenotazione.objects.filter(checkin__gte=dataArrivo, checkout__lte=dataPartenza))).filter(postiLetto=posti).filter(hotel__in=Hotel.objects.filter(citta=citta))
+            camereLibereApp = Camera.objects.filter(postiLetto=posti)
+            camerelibere = []
+            for camera in camereLibereApp:
+                print(dataPartenza)
+                print(dataArrivo)
+                if camera.hotel.citta == citta and camera.disponibilitaCamera(dataArrivo, dataPartenza):
+                    camerelibere.append(camera)
 
             if len(camerelibere)==0:
                 # se nessuna Camera è stata trovata...
